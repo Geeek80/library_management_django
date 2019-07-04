@@ -6,10 +6,14 @@ class employeeform(forms.ModelForm):
         model = mymodel
         fields = "__all__"
 
-    def clean_eid(self, *args, **kwargs):
+    def clean_eid(self, *args, **kwargs):  # validating existing eid
+        inst = self.instance
         eeid = self.cleaned_data.get('eid')
         queryset = mymodel.objects.filter(eid=eeid)
+        
+        if inst is not None:
+            queryset = queryset.exclude(pk = inst.pk)  # excludes the current instance
+
         if queryset.exists():
-            print("locha hai")
             raise forms.ValidationError("bro this employee id is already taken select another one")
         return eeid

@@ -10,6 +10,7 @@
     <center>
         <form method="POST" action="/update/{{emp.id}}">
             {% csrf_token %}
+            <div style="color:red; font-size:16px; display: inline-block;">{{ form.errors.eid }}</div><br>
             eid : <input type="number" name="eid" value="{{emp.eid}}" /><br>
             ename : <input type="text" name="ename" value="{{emp.ename}}" /><br>
             email : <input type="text" name="email" value="{{emp.email}}" /><br><br>

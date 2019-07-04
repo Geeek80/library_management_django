@@ -36,7 +36,7 @@ def update_emp(request, identity):
         return redirect('/show')
     else:
         print(form.errors)
-    return render(request, 'edit_form.html', {'emp':emp})
+    return render(request, 'edit_form.html', {'emp':emp, 'form':form})
 
 def delete_emp(request, identity):
     employee = mymodel.objects.get(id=identity)
