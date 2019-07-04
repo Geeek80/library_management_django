@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <center>
+        <table>
+            <tr>
+                <th>id</th>
+                <th>emp id </th>
+                <th>emp name </th>
+                <th>emp email </th>
+                <th>actions </th>
+            </tr>
+            {% for employee in empdata %}
+                <tr>
+                    <td>{{employee.id}}</td>
+                    <td>{{employee.eid}}</td>
+                    <td>{{employee.ename}}</td>
+                    <td>{{employee.email}}</td>
+                    <td>
+                        <a href="/edit/{{employee.id}}">edit</a> / 
+                        <a href="/delete/{{employee.id}}">delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <br/>
+        <a href="/add">add new record</a>
+    </center>
+</body>
+</html>

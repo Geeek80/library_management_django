@@ -1,0 +1,48 @@
+1. create an app
+
+2. link app in settings.py
+
+3. install mysqlclient using pip
+
+4. create database for our app in phpmyadmin
+
+5. change database settings in settings.py file
+    note : see the port number of mysql in xampp panel if you don't know already
+
+6. create a model in models.py (residing in your app folder)
+
+    1. create model class name it anything
+    2. extend it from models.Model
+    3. create columns using models module
+    4. create a inner class called 'Meta'
+    5. set value of a predefined variable
+     named 'db_table' to table name (inside Meta class)
+
+7. create a forms.py file inside app's directory
+
+    1. import django forms and models here
+    2. create class for form
+    3. inherit it from forms.ModelForm
+    4. create a inner class called 'Meta'
+    5. set value of  predefined variable named 'model' to your model name
+    6. set fields (predefined) to '__all__' if you want all field from model
+
+8. migrate your models to database
+
+    1. 'makemigrations' if you altered models.py
+    2. 'migrate' to cached models to database
+
+9. create controller in views.py file residing in app folder
+
+    1. create template folder if you haven't already
+    2. change settings.py to include this folder
+    3. import redirect with render
+    4. import form and model class here
+        (to pass form in html from here)
+    
+    5. create methods to display form, show data, edit data etc.
+
+10. create html files for form create, update, delete
+        (form tag must have csrf_token in it)
+
+11. set urls for every html  file created
