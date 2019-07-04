@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django_app.forms import employeeform
 from django_app.models import mymodel
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def add_emp(request):
@@ -16,6 +17,7 @@ def add_emp(request):
         form = employeeform()
     return render(request, "add_emp.html", {'form':form})
 
+@login_required
 def show_emp(request):
     employee = mymodel.objects.all()
     return render(request, "show_emp.html", {'empdata':employee})
@@ -38,3 +40,6 @@ def delete_emp(request, identity):
     employee = mymodel.objects.get(id=identity)
     employee.delete()
     return redirect('/show')
+
+def user_login(request):
+    return render(request, "login.html")
