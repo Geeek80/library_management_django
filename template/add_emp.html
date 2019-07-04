@@ -10,7 +10,7 @@
     <center>
         <form method="POST" action="add">
             {% csrf_token %}
-            <!-- {{form.as_p }} -->
+            <!-- {{form |linebreaks}} truncatewords:20-->
             <div style="color:red; font-size:16px; display: inline-block;">{{ form.errors.eid }}</div><br>
             employee id : {{form.eid}}<br>
             employee name : {{form.ename}}<br>
