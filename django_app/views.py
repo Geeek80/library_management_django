@@ -13,6 +13,8 @@ def add_emp(request):
                 return redirect("/show")
             except:
                 pass
+        else:
+            print(form.errors)
     else:   # create a new form
         form = employeeform()
     return render(request, "add_emp.html", {'form':form})
