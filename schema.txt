@@ -1,0 +1,27 @@
+users:
+	librarian
+	student
+
+tabels:
+	su admin
+		username
+		password
+		name
+		email
+		phone
+
+	student
+		id
+		Full name
+		enrollment
+		password
+		course id
+		division
+		semester
+
+	course
+		id
+		name
+
+	transaction
+		student id
