@@ -1,5 +1,53 @@
-{% extends 'index.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+    <title>Library Management System</title>
+</head>
+<body>
+        <div class="container-fluid vertical-center-row">
+                <div class="container">
+                    <h2 class="text-center display-3">Library Management System</h2>
+                     <hr>
+                    <div class="row">
 
-{% block content %}
-    Login here to continue to our site
-{% endblock %}
+                        <div class="col-md-3">
+                            <!-------null------>
+                        </div>
+                        
+                        <div class="col-md-5">
+                                  <form method="POST" action="/login">{% csrf_token %}
+                                <fieldset>							
+                                    <p class="text-uppercase "> Student Login: </p>	
+                                    
+                                          <div class="form-group">
+                                            <label class="col-form-label" for="inputDefault">Enrollment No.:</label>
+                                                {{ form.enrollment }}
+                                          </div>
+
+                                          <div class="form-group">
+                                                <label for="exampleInputPassword1">Password</label>
+                                                <input type="password" class="form-control" name="password" placeholder="Password">
+                                            </div>
+
+                                            <p class=" "><a href="#">Forgot Password?</a></p>
+                                    <div>
+                                        <input type="submit" class="btn btn-primary" value="Sign In">
+                                    </div>
+                                         
+                                 </fieldset>
+                        </form>	
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center">
+                    <small id="passwordHelpInline" class="text-muted"> Developers:<a href="mailto:aakashtolani80@gmail.com"> Aakash Tolani</a>, <a href="mailto:"> Het Rachh</a> and <a href="mailto:hasijasankalp@gmail.com"> Sankalp Hasija</a>. MCA students @2019</small>
+                </p>
+            </div>
+</body>
+</html>

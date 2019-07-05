@@ -1,5 +1,5 @@
 from django import forms
-from django_app.models import mymodel
+from django_app.models import mymodel, student
 
 class employeeform(forms.ModelForm):
     class Meta:
@@ -17,3 +17,11 @@ class employeeform(forms.ModelForm):
         if queryset.exists():
             raise forms.ValidationError("bro this employee id is already taken select another one")
         return eeid
+
+class loginform(forms.ModelForm):
+    class Meta:
+        model = student
+        fields = ['enrollment', 'password']
+        widgets = {
+            'enrollment': forms.TextInput(attrs={'class': 'form-control'}),
+        }

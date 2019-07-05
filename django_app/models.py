@@ -11,3 +11,11 @@ class mymodel(models.Model):
     class Meta:
         db_table = 'employ' # name of table to be created
         ordering = [ '-ename' ] # sorting enames by descending order wherever they're displayed
+
+class student(models.Model):
+    name = models.CharField(max_length=20)
+    enrollment = models.CharField(max_length=15)
+    password = models.CharField(max_length=21)
+    class Meta:
+        db_table = 'student'
+    

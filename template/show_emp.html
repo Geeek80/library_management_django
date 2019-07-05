@@ -33,7 +33,9 @@
             {% endfor %}
         </table>
         <br/>
-        <a href="/add">add new record</a>
+        {% if request.user.is_staff %}
+            <a href="/add">add new record</a>
+        {% endif %}
     </center>
 </body>
 </html>

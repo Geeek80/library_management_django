@@ -31,5 +31,5 @@ urlpatterns = [
     path('edit/<int:id>', edit_emp),
     path('update/<int:identity>', update_emp),
     path('delete/<int:identity>', delete_emp),
-    path('login/', user_login),
+    path('login', user_login),
 ]
