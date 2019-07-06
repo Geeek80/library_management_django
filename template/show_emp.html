@@ -10,32 +10,55 @@
 </head>
 <body>
     
-    <center>
+    
+        {% if request.user.is_staff %}
+            <div class="container h-100 d-flex justify-content-center mt-4">
+                <div class="my-auto">
+                <form action="/upload_csv" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                <div class="form-group">
+                    <div class="input-group mb-4">
+                        <div class="row">
+                            <div class="col">
+                                <input type="file" name="document" required>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-outline-info" type="submit">Upload Csv</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center" style="color:red;">{{ error }}</div>
+                </form>
+                <p class='text-center'><a href="/add">add new record</a></p>
+            </div>
+            </div>
+        {% endif %}
+        <center>
         <table>
             <tr>
                 <th>id</th>
-                <th>emp id </th>
-                <th>emp name </th>
-                <th>emp email </th>
+                <th>enrollment </th>
+                <th>name</th>
+                <th>password </th>
                 <th>actions </th>
             </tr>
             {% for employee in empdata %}
                 <tr>
                     <td>{{employee.id}}</td>
-                    <td>{{employee.eid}}</td>
-                    <td>{{employee.ename}}</td>
-                    <td>{{employee.email}}</td>
+                    <td>{{employee.enrollment}}</td>
+                    <td>{{employee.name}}</td>
+                    <td>{{employee.password}}</td>
+                    {% if request.user.is_staff %}
                     <td>
                         <a href="/edit/{{employee.id}}">edit</a> / 
                         <a href="/delete/{{employee.id}}">delete</a>
                     </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </table>
         <br/>
-        {% if request.user.is_staff %}
-            <a href="/add">add new record</a>
-        {% endif %}
     </center>
 </body>
 </html>

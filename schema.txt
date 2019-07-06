@@ -25,3 +25,5 @@ tabels:
 
 	transaction
 		student id
+		status
+		date

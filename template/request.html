@@ -1,0 +1,40 @@
+{% extends 'index.html' %}
+
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="container">
+            <h2 class="text-center">Library Fee Due Form</h2>
+                <div class="col-md-6">
+                <fieldset>
+                    <form action="#">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <fieldset>
+                                        <label class="control-label" for="application_no">Application No.</label>
+                                        <input class="form-control" type="text" value="80" readonly="">
+                                    </fieldset>
+                                </div>    
+                            </div>
+
+                            <div class="col">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="name">Date</label>
+                                        {{ form.date }}
+                                    </div>
+                                </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="name">Default input</label>
+                                    <input type="text" class="form-control" placeholder="Default input" id="inputDefault">
+                                </div>
+                            </div>
+                    </div>
+                    </form>
+                </fieldset>
+                </div>
+        </div>
+    </div>
+{% endblock %}

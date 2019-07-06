@@ -18,4 +18,11 @@ class student(models.Model):
     password = models.CharField(max_length=21)
     class Meta:
         db_table = 'student'
+
+# class transaction(models.Model):
+#     student_id = models.PrimaryKey(student)
+#     status = models.CharField(max_length=15)
+#     date = models.DateTimeField()
+#     class Meta:
+#         db_table = "transation"
     

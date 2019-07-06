@@ -19,10 +19,10 @@
                 <div class="collapse navbar-collapse" id="navbarColor01">
                   <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                      <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
+                      <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="show/">All Students</a>
+                      <a class="nav-link" href="/my_request">My Requests</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="#">Pricing</a>
@@ -30,6 +30,11 @@
                     <li class="nav-item">
                       <a class="nav-link" href="#">About</a>
                     </li>
+                    {% if 'name' in request.session %}
+                    <li class="nav-item">
+                      <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                    {% endif %}
                   </ul>
                   <form class="form-inline my-2 my-lg-0">
                     <input class="form-control mr-sm-2" type="text" placeholder="Search">
@@ -45,7 +50,7 @@
         </ul>
     </nav>
     {% block content %}
-    <h1>hey there i'm your template... and that's it</h1>
+    <h1>hey there {{ request.session.name }} i'm your template... and that's it</h1>
     {% endblock %}
 
     <p>body ends here</p>

@@ -32,4 +32,8 @@ urlpatterns = [
     path('update/<int:identity>', update_emp),
     path('delete/<int:identity>', delete_emp),
     path('login', user_login),
+    path('my_request/', my_request),
+    path('request/', requestt),
+    path('logout', logout),
+    path('upload_csv', upload_csv),
 ]

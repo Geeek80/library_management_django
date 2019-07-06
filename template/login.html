@@ -21,19 +21,27 @@
                         </div>
                         
                         <div class="col-md-5">
-                                  <form method="POST" action="/login">{% csrf_token %}
+                                  <form method="POST" action="/login">
+                                    {% csrf_token %}
                                 <fieldset>							
                                     <p class="text-uppercase "> Student Login: </p>	
-                                    
-                                          <div class="form-group">
-                                            <label class="col-form-label" for="inputDefault">Enrollment No.:</label>
-                                                {{ form.enrollment }}
-                                          </div>
+                                        <div class="form-group">
+                                            <label 
+                                            {% if error_usr %}
+                                                style="color:red;"                                                 
+                                            {% endif %}
+                                            class="col-form-label" for="inputDefault">Enrollment No.:</label>
+                                            {{ form.enrollment }}
+                                            <div style="color:red;">{{ error_data }}</div>
 
-                                          <div class="form-group">
-                                                <label for="exampleInputPassword1">Password</label>
-                                                <input type="password" class="form-control" name="password" placeholder="Password">
-                                            </div>
+                                            <label
+                                            {% if error_pas %}
+                                                style="color:red;" 
+                                            {% endif %}
+                                            class="col-form-label" for="inputDefault">Password:</label>
+                                                {{ form.password }}
+                                                <div style="color:red;">{{ error_pass }}</div>
+                                        </div>
 
                                             <p class=" "><a href="#">Forgot Password?</a></p>
                                     <div>
