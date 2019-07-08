@@ -19,10 +19,17 @@ class student(models.Model):
     class Meta:
         db_table = 'student'
 
-# class transaction(models.Model):
-#     student_id = models.PrimaryKey(student)
-#     status = models.CharField(max_length=15)
-#     date = models.DateTimeField()
-#     class Meta:
-#         db_table = "transation"
+class transaction(models.Model):
+    application_no = models.IntegerField(null=True, blank=True, unique=True)
+    date = models.DateTimeField(auto_now = True)
+    receipt_no = models.IntegerField()
+    receipt_date = models.DateField()
+    amount = models.IntegerField()
+    student_enrollment= models.CharField(max_length=15, unique=True)
+    status = models.CharField(max_length=15, null=True, blank=True)
+    fee_receipt_image = models.FileField(upload_to="images/")
+    cancelled_cheque_image = models.FileField(upload_to="images/")
+    
+    class Meta:
+        db_table = "transation"
     

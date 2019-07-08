@@ -6,24 +6,35 @@ tabels:
 	su admin
 		username
 		password
-		name
-		email
-		phone
 
 	student
 		id
 		Full name
+		roll no
 		enrollment
 		password
 		course id
 		division
 		semester
+		residential address
+		mobile no
 
 	course
 		id
 		name
 
 	transaction
-		student id
-		status
+		application no
 		date
+		receipt no
+		receipt date
+		amount
+		student enrolment (from student foreign)
+			full name (from student table)
+			res address (from student table)
+			mobile no
+			roll no
+			sem and division
+		status (pending or approved)
+		library receipt (image upload)
+		cancelled cheque (image upload)

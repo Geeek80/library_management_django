@@ -1,6 +1,6 @@
 import csv, io
 from django.shortcuts import render, redirect
-from django_app.forms import employeeform, loginform
+from django_app.forms import employeeform, loginform, fee_request_form
 from django_app.models import mymodel, student
 from django.contrib.auth.decorators import login_required
 
@@ -29,7 +29,7 @@ def show_emp(request):
 
 # @login_required
 def edit_emp(request, id):
-    employee = mymodel.objects.get(id=id)
+    employee = student.objects.get(id=id)
     return render(request, 'edit_form.html', {'emp':employee})
 
 # @login_required
@@ -45,7 +45,7 @@ def update_emp(request, identity):
 
 # @login_required
 def delete_emp(request, identity):
-    employee = mymodel.objects.get(id=identity)
+    employee = student.objects.get(id=identity)
     employee.delete()
     return redirect('/show')
 
@@ -84,9 +84,19 @@ def my_request(request):
 
 def requestt(request):
     if request.method == 'POST':
-        pass
+        form = fee_request_form(request.POST, request.FILES)
+        enrollment = request.POST.get('student_enrollment')
+        stud = student.objects.get(enrollment=enrollment)
+        
+        if form.is_valid():
+            newform = form.save(commit=False)
+            newform.application_no = 1
+            newform.status = "pending"
+            newform.save()
+        else:
+            print(form.errors)
     else:
-        form = requestform()
+        form = fee_request_form()
     return render(request, 'request.html', {'form':form})
 
 def logout(request):
