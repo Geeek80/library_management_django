@@ -1,7 +1,7 @@
 import csv, io
 from django.shortcuts import render, redirect
 from django_app.forms import employeeform, loginform, fee_request_form
-from django_app.models import mymodel, student
+from django_app.models import mymodel, student, transaction
 from django.contrib.auth.decorators import login_required
 
 
@@ -66,6 +66,7 @@ def user_login(request):
                 return render(request, "login.html", {'form':form,'error_usr':error_usr, 'error_data':data})
             if password == stud.password:
                 request.session['name'] = stud.name
+                request.session['enrollment'] = stud.enrollment
                 return render(request, "index.html")
             else:
                 data = "Wrong Password"
@@ -79,12 +80,18 @@ def user_login(request):
     return render(request, "login.html", {'form':form})
 
 def my_request(request):
-    # if request.session['name'].isempty():
+    if 'enrollment' in request.session:
+        try:
+            trans = transaction.objects.get(student_enrollment=request.session['enrollment'])
+            return render(request, 'my_request.html', {'transaction_data':trans})
+        except:
+            pass    
     return render(request, 'my_request.html')
 
 def requestt(request):
+    form = fee_request_form(initial={'student_enrollment':request.session['enrollment']})
     if request.method == 'POST':
-        form = fee_request_form(request.POST, request.FILES)
+        form = fee_request_form(request.POST, request.FILES, initial={'student_enrollment':request.session['enrollment']})
         enrollment = request.POST.get('student_enrollment')
         stud = student.objects.get(enrollment=enrollment)
         
@@ -93,10 +100,10 @@ def requestt(request):
             newform.application_no = 1
             newform.status = "pending"
             newform.save()
+            message.info(request, 'Your Request has been Submitted Successfully')
+            return redirect("/request")
         else:
             print(form.errors)
-    else:
-        form = fee_request_form()
     return render(request, 'request.html', {'form':form})
 
 def logout(request):

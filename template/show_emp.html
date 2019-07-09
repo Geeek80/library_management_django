@@ -1,3 +1,4 @@
+{% extends 'index.html' %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +10,7 @@
     <title>Document</title>
 </head>
 <body>
-    
+    {% block content %}
     
         {% if request.user.is_staff %}
             <div class="container h-100 d-flex justify-content-center mt-4">
@@ -35,30 +36,40 @@
             </div>
         {% endif %}
         <center>
-        <table>
-            <tr>
-                <th>id</th>
-                <th>enrollment </th>
-                <th>name</th>
-                <th>password </th>
-                <th>actions </th>
-            </tr>
+                <!-- <tr class="table-secondary">
+                        <th >Secondary</th>
+                        <td>Column content</td>
+                        <td>Column content</td>
+                        <td>Column content</td>
+                      </tr> -->
+        <div class="container">
+        <table class="table table-hover">
+            <thead>
+                <tr class="table-primary">
+                    <th>id</th>
+                    <th>enrollment </th>
+                    <th>name</th>
+                    <th>password </th>
+                    <th>actions </th>
+                </tr>
+            </thead>
             {% for employee in empdata %}
-                <tr>
-                    <td>{{employee.id}}</td>
-                    <td>{{employee.enrollment}}</td>
-                    <td>{{employee.name}}</td>
-                    <td>{{employee.password}}</td>
+                <tr class="table-secondary">
+                    <td class="text-center" style="color:black">{{employee.id}}</td>
+                    <td class="text-center" style="color:black">{{employee.enrollment}}</td>
+                    <td class="text-center" style="color:black">{{employee.name}}</td>
+                    <td class="text-center" style="color:black">{{employee.password}}</td>
                     {% if request.user.is_staff %}
-                    <td>
-                        <a href="/edit/{{employee.id}}">edit</a> / 
-                        <a href="/delete/{{employee.id}}">delete</a>
+                    <td class="text-center" >
+                        <a style="color:yellow" href="/edit/{{employee.id}}">Edit</a> / 
+                        <a style="color:yellow" href="/delete/{{employee.id}}">Delete</a>
                     </td>
                     {% endif %}
                 </tr>
             {% endfor %}
         </table>
-        <br/>
+    </div>
     </center>
+    {% endblock %}
 </body>
 </html>

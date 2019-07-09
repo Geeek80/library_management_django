@@ -45,7 +45,7 @@ class fee_request_form(forms.ModelForm):
             'receipt_no' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Receipt No."}),
             'receipt_date' : forms.DateInput(attrs = {"class":"form-control", "placeholder": "dd/mm/yyyy"}, format="%d/%m/%Y"),
             'amount' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Fee Amount"}),
-            'student_enrollment' : forms.TextInput(attrs = {"class":"form-control", "placeholder":"e.g: 175170693016"}),
+            'student_enrollment' : forms.TextInput(attrs = {"class":"form-control", "readonly":"", 'placeholder':"e.g: 175170693016"}),
             'fee_receipt_image' : forms.FileInput(attrs = {"class":"form-control"}),
             'cancelled_cheque_image' : forms.FileInput(attrs = {"class":"form-control"}),
         }
