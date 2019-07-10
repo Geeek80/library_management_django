@@ -43,9 +43,16 @@
                                                 <div style="color:red;">{{ error_pass }}</div>
                                         </div>
 
-                                            <p class=" "><a href="#">Forgot Password?</a></p>
+                                            <p class=" "><a href="/forget">Forgot Password?</a></p>
                                     <div>
                                         <input type="submit" class="btn btn-primary" value="Sign In">
+                                        {% if messages %}
+                                        <ul class="messages">
+                                            {% for message in messages %}
+                                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% endif %}
                                     </div>
                                          
                                  </fieldset>

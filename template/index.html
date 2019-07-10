@@ -50,7 +50,9 @@
         </ul>
     </nav>
     {% block content %}
-    <h1>hey there {{ request.session.name }} i'm your template... and that's it</h1>
+    <h1>hey there {{ request.session.name }} i'm your template... and that's it
+      <s>captcha</s>
+    </h1>
     {% endblock %}
 
     <p>body ends here</p>

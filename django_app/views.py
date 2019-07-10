@@ -3,6 +3,9 @@ from django.shortcuts import render, redirect
 from django_app.forms import employeeform, loginform, fee_request_form
 from django_app.models import mymodel, student, transaction
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 # Create your views here.
@@ -100,15 +103,16 @@ def requestt(request):
             newform.application_no = 1
             newform.status = "pending"
             newform.save()
-            message.info(request, 'Your Request has been Submitted Successfully')
-            return redirect("/request")
+            messages.info(request, 'Your Request has been Submitted Successfully')
+            return redirect("/my_request")
         else:
             print(form.errors)
     return render(request, 'request.html', {'form':form})
 
 def logout(request):
-    if 'name' in request.session:
+    if 'name' and 'enrollment' in request.session:
         del request.session['name']
+        del request.session['enrollment']
     return redirect('/login')
 
 def upload_csv(request):
@@ -130,3 +134,12 @@ def upload_csv(request):
             )
         return render(request, 'show_emp.html', {'empdata':students, 'error':'the data has been uploaded'})
     return redirect('/show')
+
+def forget_pass(request):
+    subject = 'noreply@libraryfeemanagement.com'
+    body = 'your password is falana dikna please login again'
+    from_mail = settings.EMAIL_HOST_USER
+    to_mail = ['tolaniaakash80@gmail.com']
+    send_mail(subject, body, from_mail, to_mail, fail_silently=False)
+    messages.info(request, 'the mail has been sent to aaxxxxxxxxxil.com')
+    return redirect('/login')

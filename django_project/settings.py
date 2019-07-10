@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
+from .email import *
 
 import os
 
@@ -138,3 +139,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # if settings.DEBUG:
 #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+EMAIL_USE_TLS = use_tls
+EMAIL_HOST = email_host
+EMAIL_HOST_USER = email_host_user
+EMAIL_HOST_PASSWORD  = email_host_password
+EMAIL_PORT = email_port

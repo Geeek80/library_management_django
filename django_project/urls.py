@@ -36,4 +36,5 @@ urlpatterns = [
     path('request/', requestt),
     path('logout', logout),
     path('upload_csv', upload_csv),
+    path('forget', forget_pass),
 ]
