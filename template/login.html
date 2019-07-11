@@ -7,12 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{% static 'login.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
-    <title>Library Management System</title>
+    <title>Library Fee Refund System</title>
 </head>
 <body>
         <div class="container-fluid vertical-center-row">
                 <div class="container">
-                    <h2 class="text-center display-3">Library Management System</h2>
+                    <h2 class="text-center display-3">Library Fee Refund System</h2>
                      <hr>
                     <div class="row">
 
@@ -21,7 +21,14 @@
                         </div>
                         
                         <div class="col-md-5">
-                                  <form method="POST" action="/login">
+                                  <form method="POST" action=
+                                  {% if enr_only_action %}
+                                  {{ enr_only_action }}
+                                  {% else %}
+                                  "/login"
+                                  {% endif %}
+                                  
+                                  >
                                     {% csrf_token %}
                                 <fieldset>							
                                     <p class="text-uppercase "> Student Login: </p>	
@@ -34,22 +41,29 @@
                                             {{ form.enrollment }}
                                             <div style="color:red;">{{ error_data }}</div>
 
-                                            <label
-                                            {% if error_pas %}
-                                                style="color:red;" 
+                                            {% if not enr_only_action %}
+                                                <label
+                                                {% if error_pas %}
+                                                    style="color:red;" 
+                                                {% endif %}
+                                                class="col-form-label" for="inputDefault">Password:</label>
+                                                    {{ form.password }}
+                                                    <div style="color:red;">{{ error_pass }}</div>
                                             {% endif %}
-                                            class="col-form-label" for="inputDefault">Password:</label>
-                                                {{ form.password }}
-                                                <div style="color:red;">{{ error_pass }}</div>
                                         </div>
 
-                                            <p class=" "><a href="/forget">Forgot Password?</a></p>
                                     <div>
-                                        <input type="submit" class="btn btn-primary" value="Sign In">
+                                        <input type="submit" class="btn btn-primary" value=
+                                        {% if enr_only_action %}
+                                        "Get OTP"
+                                        {% else %}
+                                        "Sign In"
+                                        {% endif %}
+                                        >
                                         {% if messages %}
                                         <ul class="messages">
                                             {% for message in messages %}
-                                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                            <li class="text-info"><b>{{ message }}</b></li>
                                             {% endfor %}
                                         </ul>
                                         {% endif %}
@@ -57,6 +71,16 @@
                                          
                                  </fieldset>
                         </form>	
+                        {% if not enr_only_action %}
+                            <div class="row mt-3">
+                                <div class="col">
+                                <form method="GET" action="/otplogin">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-primary">Login Using OTP?</button>
+                                </form>
+                                </div>
+                            </div>
+                        {% endif %}
                         </div>
                     </div>
                 </div>

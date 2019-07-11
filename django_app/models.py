@@ -16,6 +16,7 @@ class student(models.Model):
     name = models.CharField(max_length=20)
     enrollment = models.CharField(max_length=15)
     password = models.CharField(max_length=21)
+    email = models.EmailField()
     class Meta:
         db_table = 'student'
 

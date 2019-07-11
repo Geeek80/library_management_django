@@ -135,11 +135,24 @@ def upload_csv(request):
         return render(request, 'show_emp.html', {'empdata':students, 'error':'the data has been uploaded'})
     return redirect('/show')
 
-def forget_pass(request):
-    subject = 'noreply@libraryfeemanagement.com'
-    body = 'your password is falana dikna please login again'
-    from_mail = settings.EMAIL_HOST_USER
-    to_mail = ['tolaniaakash80@gmail.com']
-    send_mail(subject, body, from_mail, to_mail, fail_silently=False)
-    messages.info(request, 'the mail has been sent to aaxxxxxxxxxil.com')
-    return redirect('/login')
+def otp_login(request):
+    if request.method == 'GET':
+        form = loginform()
+        messages.info(request, 'enter enrollment to get otp')
+        return render(request, 'login.html', {'form':form, 'enr_only_action':'/otplogin'})
+    else:
+        try:
+            stud = student.objects.get(enrollment=request.POST.get('enrollment'))
+        except:
+            data = "sorry that enrollment didn't work"
+            error_usr = True
+            form = loginform(initial={'enrollment':request.POST.get('enrollment')})
+            return render(request, "login.html", {'form':form,'error_usr':error_usr, 'error_data':data, 'enr_only_action':'/otplogin'})
+        subject = 'noreply@libraryfeerefund.com'
+        body = 'your password is falana dikna please login again'
+        from_mail = settings.EMAIL_HOST_USER
+        temp_mail = (stud.email[0:2]) + 'x'*(len(stud.email)-5) + (stud.email[-5:])
+        to_mail = [stud.email]
+        # send_mail(subject, body, from_mail, to_mail, fail_silently=False)
+        messages.info(request, 'the mail has been sent to '+temp_mail)
+        return redirect('/login')
