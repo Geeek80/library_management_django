@@ -20,6 +20,15 @@ class student(models.Model):
     class Meta:
         db_table = 'student'
 
+
+class librarian(models.Model):
+    name = models.CharField(max_length=20)
+    username = models.CharField(max_length=15)
+    password = models.CharField(max_length=21)
+    email = models.EmailField()
+    class Meta:
+        db_table = 'librarian'
+
 class transaction(models.Model):
     application_no = models.IntegerField(null=True, blank=True, unique=True)
     date = models.DateTimeField(auto_now = True)

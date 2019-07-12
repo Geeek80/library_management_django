@@ -1,5 +1,5 @@
 from django import forms
-from django_app.models import mymodel, student, transaction
+from django_app.models import mymodel, student, transaction, librarian
 
 class employeeform(forms.ModelForm):
     class Meta:
@@ -24,6 +24,15 @@ class loginform(forms.ModelForm):
         fields = ['enrollment', 'password']
         widgets = {
             'enrollment': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enrollment No.'}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
+        }
+
+class libloginform(forms.ModelForm):
+    class Meta:
+        model = librarian
+        fields = ['username', 'password']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
             'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
         }
 

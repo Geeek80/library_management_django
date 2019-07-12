@@ -1,0 +1,67 @@
+{% extends 'login.html' %}
+
+{% block content %}
+<div class="col-md-5">
+        <a href="/login"><button type="button" class="btn btn-outline-info">Student Login</button></a>
+        <a href="/lib_login"><button type="button" class="btn btn-info ml-4">Librarian Login</button></a>
+          <form method="POST" action="
+          {% if username_only_action %}
+          {{ username_only_action }}
+          {% else %}
+          /login/librarian
+          {% endif %}"
+          >
+            {% csrf_token %}
+        <fieldset>							
+                
+                <div class="form-group">
+                    <label 
+                    {% if error_usr %}
+                        style="color:red;"                                                 
+                    {% endif %}
+                    class="col-form-label" for="inputDefault">Username:</label>
+                    {{ form.username }}
+                    <div style="color:red;">{{ error_data }}</div>
+
+                    {% if not username_only_action %}
+                        <label
+                        {% if error_pas %}
+                            style="color:red;" 
+                        {% endif %}
+                        class="col-form-label" for="inputDefault">Password:</label>
+                            {{ form.password }}
+                            <div style="color:red;">{{ error_pass }}</div>
+                    {% endif %}
+                </div>
+
+            <div>
+                <input type="submit" class="btn btn-primary" value=
+                {% if username_only_action %}
+                "Get OTP"
+                {% else %}
+                "Sign In"
+                {% endif %}
+                >
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li class="text-info"><b>{{ message }}</b></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+                 
+         </fieldset>
+</form>	
+{% if not username_only_action %}
+    <div class="row mt-3">
+        <div class="col">
+        <form method="GET" action="/otplogin/librarian">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-primary">Login Using OTP?</button>
+        </form>
+        </div>
+    </div>
+{% endif %}
+</div>
+{% endblock %}

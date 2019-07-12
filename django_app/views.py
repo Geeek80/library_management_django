@@ -1,7 +1,7 @@
 import csv, io
 from django.shortcuts import render, redirect
-from django_app.forms import employeeform, loginform, fee_request_form
-from django_app.models import mymodel, student, transaction
+from django_app.forms import employeeform, loginform, fee_request_form, libloginform
+from django_app.models import mymodel, student, transaction, librarian
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -53,26 +53,46 @@ def delete_emp(request, identity):
     employee.delete()
     return redirect('/show')
 
-def user_login(request):
-    if 'name' in request.session:
-        return redirect('/')
+def user_login(request, desig=None):
+
+    if desig == 'student':
+        session_var_name = 'name'
+        frm = loginform(request.POST)
+        usrnm = 'enrollment'
+        model = student
+        pageload = 'login.html'
+        if 'name' in request.session:
+            return redirect('/')
+    
+    if desig == 'librarian':
+        session_var_name = 'lib_name'
+        frm = libloginform(request.POST)
+        usrnm = 'username'
+        model = librarian
+        pageload = 'lib_login.html'
+        if 'lib_name' in request.session:
+            return redirect('/')
 
     if request.method == "POST":  # if submit clicked
-        form = loginform(request.POST)
-        enrollment = request.POST.get('enrollment')
+        form = frm
+        username = request.POST.get(usrnm)
         password = request.POST.get('password')
         if form.is_valid():
             try:
-                stud = student.objects.get(enrollment=enrollment)
+                if desig == 'student':
+                   insan = model.objects.get(enrollment=username)
+                elif desig == 'librarian':
+                    insan = model.objects.get(username=username)
+                    id = str(insan.id)
             except:
                 success = False
-                data = "sorry that enrollment didn't work"
+                data = "sorry that "+usrnm+" didn't work"
                 error_usr = True
-                return render(request, "login.html", {'form':form,'error_usr':error_usr, 'error_data':data})
-            if password == stud.password:
+                return render(request, pageload, {'form':form,'error_usr':error_usr, 'error_data':data})
+            if password == insan.password:
                 success = True
-            elif enrollment+'_otp' in request.session:
-                if password == request.session[enrollment+'_otp']:
+            elif username+'_otp' in request.session:
+                if password == request.session[username+'_otp']:
                     messages.info(request, 'note that you\'ve logged in using otp, that otp is for one time only this same otp won\'t work next time if you forgot your password consider changing your password from homepage' )
                     success = True
                 else :
@@ -81,14 +101,18 @@ def user_login(request):
             else:
                 data = "Wrong Password"
                 error_pas = True
-                return render(request, "login.html", {'form':form,'error_pas':error_pas, 'error_pass':data})
+                return render(request, pageload, {'form':form,'error_pas':error_pas, 'error_pass':data})
             # if got success by any way
             if success:
-                request.session['name'] = stud.name
-                request.session['enrollment'] = stud.enrollment
-                if enrollment+'_otp' in request.session:
-                    del request.session[enrollment+'_otp']
-                return render(request, "index.html")
+                request.session[session_var_name] = insan.name
+                if desig == 'student':
+                    request.session[usrnm] = insan.enrollment
+                    if username+'_otp' in request.session:
+                        del request.session[username+'_otp']
+                elif desig == 'librarian':
+                    if id+'_otp' in request.session:
+                        del request.session[id+'_otp']
+                return redirect('/')
         else:
             print(form.errors)
     else:   # create a new form
@@ -122,11 +146,15 @@ def requestt(request):
             print(form.errors)
     return render(request, 'request.html', {'form':form})
 
-def logout(request):
-    if 'name' and 'enrollment' in request.session:
-        del request.session['name']
-        del request.session['enrollment']
-    return redirect('/login')
+def logout(request, desig):
+    if desig == "student":
+        if 'name' and 'enrollment' in request.session:
+            del request.session['name']
+            del request.session['enrollment']
+    if desig == 'librarian':
+        if 'lib_name' in request.session:
+            del request.session['lib_name']
+    return redirect('/login')    
 
 def upload_csv(request):
     students = student.objects.all()
@@ -148,27 +176,98 @@ def upload_csv(request):
         return render(request, 'show_emp.html', {'empdata':students, 'error':'the data has been uploaded'})
     return redirect('/show')
 
-def otp_login(request):
+def otp_login(request, desig):
+    if desig == 'student':
+        frm = loginform()
+        usrnm = 'enrollment'
+        pageload = 'login.html'
+        model = student
+        with_ini = loginform(initial={usrnm:request.POST.get(usrnm)})
+        redir = '/login'
+        action = '/otplogin/'+desig
+        action_name = 'enr_only_action'
+    
+    if desig == 'librarian':
+        frm = libloginform()
+        usrnm = 'username'
+        pageload = 'lib_login.html'
+        model = librarian
+        with_ini = libloginform(initial={usrnm:request.POST.get(usrnm)})
+        redir = '/lib_login'
+        action = '/otplogin/'+desig
+        action_name = usrnm+'_only_action'
+
     if request.method == 'GET':
-        form = loginform()
-        messages.info(request, 'enter enrollment to get otp')
-        return render(request, 'login.html', {'form':form, 'enr_only_action':'/otplogin'})
+        form = frm
+        messages.info(request, 'enter '+usrnm+' to get otp')
+        return render(request, pageload, {'form':form, action_name:action})
     else:
         try:
-            enrollment = request.POST.get('enrollment')
-            stud = student.objects.get(enrollment=enrollment)
+            username = request.POST.get(usrnm)
+            if desig == 'student':
+                insan = model.objects.get(enrollment=username)
+            if desig == 'librarian':
+                insan = model.objects.get(username=username)
         except:
-            data = "sorry that enrollment didn't work"
+            data = "sorry that "+usrnm+" didn't work"
             error_usr = True
-            form = loginform(initial={'enrollment':request.POST.get('enrollment')})
-            return render(request, "login.html", {'form':form,'error_usr':error_usr, 'error_data':data, 'enr_only_action':'/otplogin'})
+            # form = loginform(initial={'enrollment':request.POST.get('enrollment')})
+            form = with_ini
+            return render(request, pageload, {'form':form,'error_usr':error_usr, 'error_data':data, action_name:action})
         subject = 'noreply@libraryfeerefund.com'
         from_mail = settings.EMAIL_HOST_USER
-        temp_mail = (stud.email[0:2]) + 'x'*(len(stud.email)-5) + (stud.email[-5:])
-        to_mail = [stud.email]
+        temp_mail = (insan.email[0:2]) + 'x'*(len(insan.email)-5) + (insan.email[-5:])
+        to_mail = [insan.email]
         otp = str(random.randint(1000, 9999))
-        request.session[enrollment+'_otp'] = otp
-        body = 'your otp for library fee refund system is '+otp+' login again using this as password do not share this with anyone'
+        request.session[username+'_otp'] = otp
+        body = 'your otp for library fee refund system '+desig+' login is '+otp+' login again using this as password do not share this with anyone'
         send_mail(subject, body, from_mail, to_mail, fail_silently=False)
         messages.info(request, 'the mail has been sent to '+temp_mail)
-        return redirect('/login')
+        return redirect(redir)
+
+def lib_login(request):
+    if 'lib_name' in request.session:
+        return redirect('/')
+
+    if request.method == "POST":  # if submit clicked
+        form = libloginform(request.POST)
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        if form.is_valid():
+            try:
+                libraria = librarian.objects.get(username=username)
+                id = str(libraria.id)
+            except:
+                success = False
+                data = "sorry that username didn't work"
+                error_usr = True
+                return render(request, "lib_login.html", {'form':form,'error_usr':error_usr, 'error_data':data})
+            if password == libraria.password:
+                success = True
+            elif id+'_otp' in request.session:
+                if password == request.session[id+'_otp']:
+                    messages.info(request, 'note that you\'ve logged in using otp, that otp is for one time only this same otp won\'t work next time if you forgot your password consider changing your password from homepage' )
+                    success = True
+                else :
+                    messages.error(request, 'that otp didn\'t work bro...')
+                    success = False
+            else:
+                data = "Wrong Password"
+                error_pas = True
+                return render(request, "lib_login.html", {'form':form,'error_pas':error_pas, 'error_pass':data})
+            # if got success by any way
+            if success:
+                request.session['lib_name'] = libraria.name
+                if id+'_otp' in request.session:
+                    del request.session[id+'_otp']
+                return redirect('/')
+        else:
+            print(form.errors)
+    else:   # create a new form
+        form = libloginform()
+    return render(request, "lib_login.html", {'form':form})
+
+def clean(request):
+    for key in list(request.session.keys()):
+        del request.session[key]
+    return redirect('/login')
