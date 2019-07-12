@@ -50,6 +50,13 @@
         </ul>
     </nav>
     {% block content %}
+    {% if messages %}
+      <ul class="messages">
+          {% for message in messages %}
+          <li class="text-info"><b>{{ message }}</b></li>
+          {% endfor %}
+      </ul>
+    {% endif %}
     <h1>hey there {{ request.session.name }} i'm your template... and that's it
       <s>captcha</s>
     </h1>

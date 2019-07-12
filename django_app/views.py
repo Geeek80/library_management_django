@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
+import random
 
 
 # Create your views here.
@@ -64,18 +65,30 @@ def user_login(request):
             try:
                 stud = student.objects.get(enrollment=enrollment)
             except:
+                success = False
                 data = "sorry that enrollment didn't work"
                 error_usr = True
                 return render(request, "login.html", {'form':form,'error_usr':error_usr, 'error_data':data})
             if password == stud.password:
-                request.session['name'] = stud.name
-                request.session['enrollment'] = stud.enrollment
-                return render(request, "index.html")
+                success = True
+            elif enrollment+'_otp' in request.session:
+                if password == request.session[enrollment+'_otp']:
+                    messages.info(request, 'note that you\'ve logged in using otp, that otp is for one time only this same otp won\'t work next time if you forgot your password consider changing your password from homepage' )
+                    success = True
+                else :
+                    messages.error(request, 'that otp didn\'t work bro...')
+                    success = False
             else:
                 data = "Wrong Password"
                 error_pas = True
                 return render(request, "login.html", {'form':form,'error_pas':error_pas, 'error_pass':data})
-                
+            # if got success by any way
+            if success:
+                request.session['name'] = stud.name
+                request.session['enrollment'] = stud.enrollment
+                if enrollment+'_otp' in request.session:
+                    del request.session[enrollment+'_otp']
+                return render(request, "index.html")
         else:
             print(form.errors)
     else:   # create a new form
@@ -142,17 +155,20 @@ def otp_login(request):
         return render(request, 'login.html', {'form':form, 'enr_only_action':'/otplogin'})
     else:
         try:
-            stud = student.objects.get(enrollment=request.POST.get('enrollment'))
+            enrollment = request.POST.get('enrollment')
+            stud = student.objects.get(enrollment=enrollment)
         except:
             data = "sorry that enrollment didn't work"
             error_usr = True
             form = loginform(initial={'enrollment':request.POST.get('enrollment')})
             return render(request, "login.html", {'form':form,'error_usr':error_usr, 'error_data':data, 'enr_only_action':'/otplogin'})
         subject = 'noreply@libraryfeerefund.com'
-        body = 'your password is falana dikna please login again'
         from_mail = settings.EMAIL_HOST_USER
         temp_mail = (stud.email[0:2]) + 'x'*(len(stud.email)-5) + (stud.email[-5:])
         to_mail = [stud.email]
-        # send_mail(subject, body, from_mail, to_mail, fail_silently=False)
+        otp = str(random.randint(1000, 9999))
+        request.session[enrollment+'_otp'] = otp
+        body = 'your otp for library fee refund system is '+otp+' login again using this as password do not share this with anyone'
+        send_mail(subject, body, from_mail, to_mail, fail_silently=False)
         messages.info(request, 'the mail has been sent to '+temp_mail)
         return redirect('/login')
