@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{% static 'login.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
-    <title>Library Fee Refund System</title>
+    <title>Library Fee Refund System {% block title %}- Student Login{% endblock %}</title>
 </head>
 <body>
         
@@ -22,8 +22,8 @@
                         </div>
                         {% block content %}
                         <div class="col-md-5">
-                                <a href="/login"><button type="button" class="btn btn-info">Student Login</button></a>
-                                <a href="/lib_login"><button type="button" class="btn btn-outline-info ml-4">Librarian Login</button></a>
+                                <a href="/login/student"><button type="button" class="btn btn-info">Student Login</button></a>
+                                <a href="/login/librarian"><button type="button" class="btn btn-outline-info ml-4">Librarian Login</button></a>
                                   <form method="POST" action="
                                   {% if enr_only_action %}
                                   {{ enr_only_action }}

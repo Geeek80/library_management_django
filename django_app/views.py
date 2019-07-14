@@ -89,6 +89,7 @@ def user_login(request, desig=None):
                 data = "sorry that "+usrnm+" didn't work"
                 error_usr = True
                 return render(request, pageload, {'form':form,'error_usr':error_usr, 'error_data':data})
+            
             if password == insan.password:
                 success = True
             elif username+'_otp' in request.session:
@@ -112,12 +113,12 @@ def user_login(request, desig=None):
                 elif desig == 'librarian':
                     if id+'_otp' in request.session:
                         del request.session[id+'_otp']
-                return redirect('/')
+                return render(request, 'index.html')
         else:
             print(form.errors)
     else:   # create a new form
-        form = loginform()
-    return render(request, "login.html", {'form':form})
+        form = frm
+    return render(request, pageload, {'form':form})
 
 def my_request(request):
     if 'enrollment' in request.session:
@@ -137,7 +138,7 @@ def requestt(request):
         
         if form.is_valid():
             newform = form.save(commit=False)
-            newform.application_no = 1
+            # newform.application_no = 1
             newform.status = "pending"
             newform.save()
             messages.info(request, 'Your Request has been Submitted Successfully')
@@ -154,7 +155,7 @@ def logout(request, desig):
     if desig == 'librarian':
         if 'lib_name' in request.session:
             del request.session['lib_name']
-    return redirect('/login')    
+    return redirect('/login/'+desig)
 
 def upload_csv(request):
     students = student.objects.all()
@@ -193,7 +194,7 @@ def otp_login(request, desig):
         pageload = 'lib_login.html'
         model = librarian
         with_ini = libloginform(initial={usrnm:request.POST.get(usrnm)})
-        redir = '/lib_login'
+        redir = '/login/'+desig
         action = '/otplogin/'+desig
         action_name = usrnm+'_only_action'
 
@@ -211,7 +212,6 @@ def otp_login(request, desig):
         except:
             data = "sorry that "+usrnm+" didn't work"
             error_usr = True
-            # form = loginform(initial={'enrollment':request.POST.get('enrollment')})
             form = with_ini
             return render(request, pageload, {'form':form,'error_usr':error_usr, 'error_data':data, action_name:action})
         subject = 'noreply@libraryfeerefund.com'
@@ -225,49 +225,14 @@ def otp_login(request, desig):
         messages.info(request, 'the mail has been sent to '+temp_mail)
         return redirect(redir)
 
-def lib_login(request):
-    if 'lib_name' in request.session:
-        return redirect('/')
 
-    if request.method == "POST":  # if submit clicked
-        form = libloginform(request.POST)
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        if form.is_valid():
-            try:
-                libraria = librarian.objects.get(username=username)
-                id = str(libraria.id)
-            except:
-                success = False
-                data = "sorry that username didn't work"
-                error_usr = True
-                return render(request, "lib_login.html", {'form':form,'error_usr':error_usr, 'error_data':data})
-            if password == libraria.password:
-                success = True
-            elif id+'_otp' in request.session:
-                if password == request.session[id+'_otp']:
-                    messages.info(request, 'note that you\'ve logged in using otp, that otp is for one time only this same otp won\'t work next time if you forgot your password consider changing your password from homepage' )
-                    success = True
-                else :
-                    messages.error(request, 'that otp didn\'t work bro...')
-                    success = False
-            else:
-                data = "Wrong Password"
-                error_pas = True
-                return render(request, "lib_login.html", {'form':form,'error_pas':error_pas, 'error_pass':data})
-            # if got success by any way
-            if success:
-                request.session['lib_name'] = libraria.name
-                if id+'_otp' in request.session:
-                    del request.session[id+'_otp']
-                return redirect('/')
-        else:
-            print(form.errors)
-    else:   # create a new form
-        form = libloginform()
-    return render(request, "lib_login.html", {'form':form})
+def pending_request(request):
+    pendings = transaction.objects.filter(status = 'pending')
+    if not pendings.exists():
+        pendings = None
+    return render(request, "pending_request.html", {'pending_data':pendings})
 
 def clean(request):
     for key in list(request.session.keys()):
         del request.session[key]
-    return redirect('/login')
+    return redirect('/login/student')

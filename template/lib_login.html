@@ -1,9 +1,9 @@
 {% extends 'login.html' %}
-
+{% block title %}- Librarian Login{% endblock %}
 {% block content %}
 <div class="col-md-5">
-        <a href="/login"><button type="button" class="btn btn-outline-info">Student Login</button></a>
-        <a href="/lib_login"><button type="button" class="btn btn-info ml-4">Librarian Login</button></a>
+        <a href="/login/student"><button type="button" class="btn btn-outline-info">Student Login</button></a>
+        <a href="/login/librarian"><button type="button" class="btn btn-info ml-4">Librarian Login</button></a>
           <form method="POST" action="
           {% if username_only_action %}
           {{ username_only_action }}

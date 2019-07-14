@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
-    <title>Library Fee Refund System</title>
+    <title>Library Fee Refund System - Home</title>
 </head>
 <body>
     
@@ -18,7 +18,9 @@
               
                 <div class="collapse navbar-collapse" id="navbarColor01">
                   <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
+                    
+                    <li class="nav-item">
+                    
                       <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                     </li>
                     {% if 'name' in request.session %}
@@ -27,11 +29,16 @@
                     </li>
                     {% endif %}
                     {% if 'lib_name' in request.session %}
-                      <li class="nav-item">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pending_request">Show Pending Requests</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/show">Show All Records</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/logout/librarian">Logout</a>
-                      </li>
-                    {% endif %}
-                    {% if 'name' in request.session %}
+                    </li>
+                    {% elif 'name' in request.session %}
                       <li class="nav-item">
                         <a class="nav-link" href="/logout/student">Logout</a>
                       </li>
@@ -57,6 +64,6 @@
     </h1>
     {% endblock %}
 
-    <p>body ends here</p>
+   
 </body>
 </html>
