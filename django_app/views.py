@@ -77,6 +77,7 @@ def user_login(request, desig=None):
         form = frm
         username = request.POST.get(usrnm)
         password = request.POST.get('password')
+        capt = request.session['capt']
         if form.is_valid():
             try:
                 if desig == 'student':
@@ -88,7 +89,13 @@ def user_login(request, desig=None):
                 success = False
                 data = "sorry that "+usrnm+" didn't work"
                 error_usr = True
-                return render(request, pageload, {'form':form,'error_usr':error_usr, 'error_data':data})
+                context = {
+                    'form':form,
+                    'error_usr':error_usr,
+                    'error_data':data,
+                    'captcha': capt
+                }
+                return render(request, pageload, context)
             
             if password == insan.password:
                 success = True
@@ -102,7 +109,25 @@ def user_login(request, desig=None):
             else:
                 data = "Wrong Password"
                 error_pas = True
-                return render(request, pageload, {'form':form,'error_pas':error_pas, 'error_pass':data})
+                context = {
+                    'form':form,
+                    'error_pas':error_pas,
+                    'error_pass':data,
+                    'captcha' : capt
+                }
+                return render(request, pageload, context)
+            print(request.POST.get('captcha'), type(request.POST.get('captcha')), 'asli value: '+request.session['capt'])
+            if request.POST.get('captcha') == capt:
+                success = True
+            else:
+                error_captcha = "Captcha didn't match"
+                context = {
+                    'form':form,
+                    'error_captcha':error_captcha,
+                    'captcha': capt
+                }
+                return render(request, pageload, context)
+                success = False
             # if got success by any way
             if success:
                 request.session[session_var_name] = insan.name
@@ -118,7 +143,9 @@ def user_login(request, desig=None):
             print(form.errors)
     else:   # create a new form
         form = frm
-    return render(request, pageload, {'form':form})
+        capt = random.randint(1000, 9999)
+        request.session['capt'] = str(capt)
+    return render(request, pageload, {'form':form, 'captcha':capt})
 
 def my_request(request):
     if 'enrollment' in request.session:
@@ -140,6 +167,11 @@ def requestt(request):
             newform = form.save(commit=False)
             # newform.application_no = 1
             newform.status = "pending"
+            if 'fee_receipt_image' not in request.FILES:
+                newform.amount -= 100
+            if 'last_sem_fee_image' not in request.FILES:
+                newform.amount -= 100
+            
             newform.save()
             messages.info(request, 'Your Request has been Submitted Successfully')
             return redirect("/my_request")
@@ -231,6 +263,12 @@ def pending_request(request):
     if not pendings.exists():
         pendings = None
     return render(request, "pending_request.html", {'pending_data':pendings})
+
+def view_request(request, id):
+    request_data = transaction.objects.get(id = id)
+    student_data = student.objects.get(enrollment = request_data.student_enrollment)
+    # print(request_data.fee_receipt_image)
+    return render(request, 'view_request.html', {'data':request_data, 'student':student_data})
 
 def clean(request):
     for key in list(request.session.keys()):

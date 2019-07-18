@@ -1,0 +1,27 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    - View Request
+{% endblock %}
+
+{% block content %}
+    <table>
+        <tr> 
+            Name : {{ student.name }}
+        </tr>
+       
+        <tr>
+            receipt No: {{ data.id }}
+        </tr>
+    </table>
+    <div class="containter">
+        {% if data.fee_receipt_image != '' %}
+            <img src="{{ data.fee_receipt_image.url }}" class="img-fluid " width="500" alt="Receipt Image">
+        {% endif %}
+        <img src="{{ data.cancelled_cheque_image.url }}" class="img-fluid " width="500" alt="Cancelled cheque Image">
+    </div>
+    <form action="/approve_request/{{data.id}}" class="mt-4">
+        <button type="submit" class="btn btn-info">Approve Request</button>
+    </form>
+{% endblock %}
+

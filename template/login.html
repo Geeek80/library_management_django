@@ -7,6 +7,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{% static 'login.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Bahianita&display=swap" rel="stylesheet">
+    <style>
+        .captcha{
+            letter-spacing: 3px;
+            margin: 2%;
+            font-style: italic;
+            font-family: Bahianita;
+            font-size: 30px;
+        }
+    </style>
     <title>Library Fee Refund System {% block title %}- Student Login{% endblock %}</title>
 </head>
 <body>
@@ -52,6 +62,15 @@
                                                     {{ form.password }}
                                                     <div style="color:red;">{{ error_pass }}</div>
                                             {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                        <label
+                                                {% if error_captcha %}
+                                                    style="color:red;" 
+                                                {% endif %}
+                                                class="col-form-label mb-2" for="inputDefault">Captcha : </label> <span class='captcha'><s>{{ captcha }}</span></s>  
+                                                    <input type="text" name="captcha" required>
+                                                    <div style="color:red;">{{ error_captcha }}</div>
                                         </div>
 
                                     <div>

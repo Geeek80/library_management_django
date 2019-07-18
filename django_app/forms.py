@@ -40,14 +40,16 @@ class fee_request_form(forms.ModelForm):
     class Meta:
         model = transaction
         fields = [
-            'application_no',
             'status',
             'receipt_no',
             'receipt_date',
             'amount',
             'student_enrollment',
             'fee_receipt_image',
-            'cancelled_cheque_image'
+            'cancelled_cheque_image',
+            'passbook_image',
+            'last_sem_fee_image',
+            'grade_history_image',
         ]
         widgets = {
             # 'application_no' : forms.TextInput(attrs= {'class': 'form-control', 'readonly':'readonly'})
@@ -56,5 +58,8 @@ class fee_request_form(forms.ModelForm):
             'amount' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Fee Amount"}),
             'student_enrollment' : forms.TextInput(attrs = {"class":"form-control", "readonly":"", 'placeholder':"e.g: 175170693016"}),
             'fee_receipt_image' : forms.FileInput(attrs = {"class":"form-control"}),
+            'passbook_image' : forms.FileInput(attrs = {"class":"form-control"}),
             'cancelled_cheque_image' : forms.FileInput(attrs = {"class":"form-control"}),
+            'last_sem_fee_image' : forms.FileInput(attrs = {"class":"form-control"}),
+            'grade_history_image' : forms.FileInput(attrs = {"class":"form-control"}),
         }

@@ -19,6 +19,9 @@ from django.urls import path
 from .views import *
 from django_app.views import *
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('contact/', contactpg),
@@ -36,5 +39,6 @@ urlpatterns = [
     path('upload_csv', upload_csv),
     path('otplogin/<str:desig>', otp_login),
     path('pending_request', pending_request),
+    path('view_request/<int:id>', view_request),
     # path('clean', clean),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

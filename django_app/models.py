@@ -20,7 +20,6 @@ class student(models.Model):
     class Meta:
         db_table = 'student'
 
-
 class librarian(models.Model):
     name = models.CharField(max_length=20)
     username = models.CharField(max_length=15)
@@ -30,15 +29,17 @@ class librarian(models.Model):
         db_table = 'librarian'
 
 class transaction(models.Model):
-    application_no = models.IntegerField(null=True, blank=True, unique=True)
     date = models.DateTimeField(auto_now = True)
-    receipt_no = models.IntegerField()
+    receipt_no = models.IntegerField(blank=True)
     receipt_date = models.DateField()
     amount = models.IntegerField()
     student_enrollment= models.CharField(max_length=15, unique=True)
-    status = models.CharField(max_length=15, null=True, blank=True)
-    fee_receipt_image = models.FileField(upload_to="images/")
+    status = models.CharField(max_length=15, blank=True)
+    fee_receipt_image = models.FileField(upload_to="images/", blank=True)
     cancelled_cheque_image = models.FileField(upload_to="images/")
+    passbook_image = models.FileField(upload_to="images/")
+    last_sem_fee_image = models.FileField(upload_to="images/", blank=True)
+    grade_history_image = models.FileField(upload_to="images/")
     
     class Meta:
         db_table = "transation"
