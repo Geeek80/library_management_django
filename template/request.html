@@ -82,10 +82,19 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                            <div class="form-group">
-                                <button class="btn btn-outline-primary" type="submit" >Submit Request >></button>
+                                <div class="form-group">
+                                    <button class="btn btn-outline-primary" type="submit" >Submit Request >></button>
+                                </div>
                             </div>
-                        </div>
+                            <div class="col">
+                                    {% if messages %}
+                                    <ul class="messages" style="color:red;">
+                                        {% for message in messages %}
+                                        <li class="text-info"><b>{{ message }}</b></li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                            </div>
                         </div>
                     </div>
                     </form>

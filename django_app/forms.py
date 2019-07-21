@@ -37,6 +37,10 @@ class libloginform(forms.ModelForm):
         }
 
 class fee_request_form(forms.ModelForm):
+    # receipt_date = forms.DateField(
+    #     widget=forms.DateInput(format=('%d-%m-%Y'), 
+    #                            attrs={'class':'form-control', 
+    #                            'placeholder':'Select a date'}))
     class Meta:
         model = transaction
         fields = [
@@ -54,8 +58,8 @@ class fee_request_form(forms.ModelForm):
         widgets = {
             # 'application_no' : forms.TextInput(attrs= {'class': 'form-control', 'readonly':'readonly'})
             'receipt_no' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Receipt No."}),
-            'receipt_date' : forms.DateInput(attrs = {"class":"form-control", "placeholder": "dd/mm/yyyy"}, format="%d/%m/%Y"),
-            'amount' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Fee Amount"}),
+            'receipt_date' : forms.DateInput(attrs = {"class":"form-control", "placeholder": "mm/dd/yyyy"}, format=("%m/%d/%Y") ),
+            'amount' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Library Fee Amount"}),
             'student_enrollment' : forms.TextInput(attrs = {"class":"form-control", "readonly":"", 'placeholder':"e.g: 175170693016"}),
             'fee_receipt_image' : forms.FileInput(attrs = {"class":"form-control"}),
             'passbook_image' : forms.FileInput(attrs = {"class":"form-control"}),

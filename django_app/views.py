@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 import random
+import datetime
 
 
 # Create your views here.
@@ -169,6 +170,14 @@ def requestt(request):
             newform = form.save(commit=False)
             # newform.application_no = 1
             newform.status = "pending"
+
+            if newform.amount > 3000:
+                messages.info(request, 'amount of library fee can not be greater than 3000')
+            min_date = datetime.date.today() - datetime.timedelta(days=183)
+            if newform.receipt_date > datetime.date.today() or min_date < newform.receipt_date:
+                messages.info(request, 'date cannot be greater than '+str(min_date)+' bro')
+                return redirect('/request')
+            
             if 'fee_receipt_image' not in request.FILES:
                 newform.amount -= 100
             if 'last_sem_fee_image' not in request.FILES:
