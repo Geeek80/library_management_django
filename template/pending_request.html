@@ -49,12 +49,10 @@
                     <td class="text-center" style="color:black">{{req.receipt_date}}</td>
                     <td class="text-center" style="color:black">{{req.amount}}</td>
                     <td class="text-center" style="color:black">{{req.status}}</td>
-                    <!-- {% if request.user.is_staff %} -->
                     <td class="text-center" >
                         <a style="color:yellow" href="/view_request/{{req.id}}">View</a> / 
                         <a style="color:yellow" href="/approve">Approve</a>
                     </td>
-                    <!-- {% endif %} -->
                 </tr>
             {% endfor %}
 

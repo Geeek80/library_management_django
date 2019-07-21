@@ -54,7 +54,7 @@ def delete_emp(request, identity):
     return redirect('/show')
 
 def user_login(request, desig=None):
-
+    
     if desig == 'student':
         session_var_name = 'name'
         frm = loginform(request.POST)
@@ -65,13 +65,13 @@ def user_login(request, desig=None):
             return redirect('/')
     
     if desig == 'librarian':
+        if 'lib_name' in request.session:
+            return redirect('/')
         session_var_name = 'lib_name'
         frm = libloginform(request.POST)
         usrnm = 'username'
         model = librarian
         pageload = 'lib_login.html'
-        if 'lib_name' in request.session:
-            return redirect('/')
 
     if request.method == "POST":  # if submit clicked
         form = frm
@@ -130,12 +130,13 @@ def user_login(request, desig=None):
                 success = False
             # if got success by any way
             if success:
-                request.session[session_var_name] = insan.name
+                request.session[session_var_name] = insan.name                    
                 if desig == 'student':
                     request.session[usrnm] = insan.enrollment
                     if username+'_otp' in request.session:
                         del request.session[username+'_otp']
                 elif desig == 'librarian':
+                    request.session['lib_username'] = insan.username
                     if id+'_otp' in request.session:
                         del request.session[id+'_otp']
                 return render(request, 'index.html')
@@ -148,13 +149,14 @@ def user_login(request, desig=None):
     return render(request, pageload, {'form':form, 'captcha':capt})
 
 def my_request(request):
+    is_logged_in(request)
+    trans = None
     if 'enrollment' in request.session:
         try:
             trans = transaction.objects.get(student_enrollment=request.session['enrollment'])
-            return render(request, 'my_request.html', {'transaction_data':trans})
         except:
-            pass    
-    return render(request, 'my_request.html')
+            pass   
+    return render(request, 'my_request.html', {'transaction_data':trans})
 
 def requestt(request):
     form = fee_request_form(initial={'student_enrollment':request.session['enrollment']})
@@ -185,8 +187,9 @@ def logout(request, desig):
             del request.session['name']
             del request.session['enrollment']
     if desig == 'librarian':
-        if 'lib_name' in request.session:
+        if 'lib_name' and 'lib_username' in request.session:
             del request.session['lib_name']
+            del request.session['lib_username']
     return redirect('/login/'+desig)
 
 def upload_csv(request):
@@ -274,3 +277,99 @@ def clean(request):
     for key in list(request.session.keys()):
         del request.session[key]
     return redirect('/login/student')
+
+def is_logged_in(request):
+    if 'name' in request.session:
+        return True
+    return False
+
+def change_pass(request, desig):
+    if request.method == 'GET':
+        return render(request, 'change_password.html', {'desig':desig})
+    
+    flag = 0
+    new_pass = request.POST.get('new_pass', None)
+    confirm = request.POST.get('cnf_pass', None)
+    pas = request.POST.get('old_pass', None)
+
+    if new_pass != confirm:
+        msg = 'new password and confirm password didn\'t match'
+        context = {
+            'error_match': msg,
+            'desig':desig
+        }
+        return render(request, 'change_password.html', context)
+    
+    if desig == 'student':
+        username = request.session['enrollment']
+        try:
+            user = student.objects.get(enrollment=username)
+        except:
+            print('student not found')
+            return render(request, 'change_password.html')
+    
+    if desig == 'librarian':
+        username = request.session['lib_username']
+        try:
+            user = librarian.objects.get(username=username)
+        except:
+            print('librarian not found')
+            return render(request, 'change_password.html')
+        
+    if(user.password != pas):
+        flag = 1
+        msg = 'old password invalid'
+        context = {
+            'old_error': msg,
+            'desig':desig
+        }
+        if username+'_otp' in request.session:
+            if pas != request.session[username+'_otp']:
+                print('otp invalid')
+                flag = 1
+            else:
+                flag = 0
+    if user.password == new_pass:
+        msg = 'old password and new pass word cannot be same'
+        flag = 1
+        context = {
+            'error_match': msg,
+            'desig':desig
+        }
+    if flag == 1:
+        return render(request, 'change_password.html', context)
+    else:
+        user.password = new_pass
+        user.save()
+        messages.info(request, 'password changed successfully')
+        logout(request, desig)
+        redir = '/login/'+desig       
+        return redirect(redir)
+
+def get_otp(request, desig):
+    if desig == 'student':
+        username = request.session['enrollment']
+        try:
+            user = student.objects.get(enrollment=username)
+        except:
+            print('student not found')
+            return redirect('/change_password/student')
+    
+    if desig == 'librarian':
+        username = request.session['lib_username']
+        try:
+            user = librarian.objects.get(username=username)
+        except:
+            print('librarian not found')
+            return render(request, 'change_password.html')
+        
+    subject = 'noreply@libraryfeerefund.com'
+    from_mail = settings.EMAIL_HOST_USER
+    temp_mail = (user.email[0:2]) + 'x'*(len(user.email)-5) + (user.email[-5:])
+    to_mail = [user.email]
+    otp = str(random.randint(1000, 9999))
+    request.session[username+'_otp'] = otp
+    body = 'your otp for library fee refund system '+desig+' login is '+otp+' enter this as old password and do not share this with anyone'
+    send_mail(subject, body, from_mail, to_mail, fail_silently=False)
+    messages.info(request, 'the mail has been sent to '+temp_mail)
+    return redirect('/change_password/'+desig)

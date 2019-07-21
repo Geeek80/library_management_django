@@ -24,20 +24,26 @@
                       <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                     </li>
                     {% if 'name' in request.session %}
-                    <li class="nav-item">
-                      <a class="nav-link" href="/my_request">My Requests</a>
-                    </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="/my_request">My Requests</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="/change_password/student">Change Password</a>
+                      </li>
                     {% endif %}
                     {% if 'lib_name' in request.session %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/pending_request">Show Pending Requests</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/show">Show All Records</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout/librarian">Logout</a>
-                    </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/pending_request">Show Pending Requests</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/show">Show All Records</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/change_password/librarian">Change Password</a>
+                        </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/logout/librarian">Logout</a>
+                      </li>
                     {% elif 'name' in request.session %}
                       <li class="nav-item">
                         <a class="nav-link" href="/logout/student">Logout</a>
@@ -59,8 +65,7 @@
           {% endfor %}
       </ul>
     {% endif %}
-    <h1>hey there {{ request.session.name}} {{request.session.lib_name}} i'm your template... and that's it
-      <s>captcha</s>
+    <h1>hey there {{ request.session.name }} {{ request.session.lib_name }} i'm your template... and that's it
     </h1>
     {% endblock %}
 

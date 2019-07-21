@@ -14,7 +14,7 @@
             margin: 2%;
             font-style: italic;
             font-family: Bahianita;
-            font-size: 30px;
+            font-size: 25px;
         }
     </style>
     <title>Library Fee Refund System {% block title %}- Student Login{% endblock %}</title>
@@ -68,7 +68,7 @@
                                                 {% if error_captcha %}
                                                     style="color:red;" 
                                                 {% endif %}
-                                                class="col-form-label mb-2" for="inputDefault">Captcha : </label> <span class='captcha'><s>{{ captcha }}</span></s>  
+                                                class="col-form-label" for="inputDefault">Captcha : </label> <span class='captcha'><s>{{ captcha }}</span></s>  
                                                     <input type="text" name="captcha" required>
                                                     <div style="color:red;">{{ error_captcha }}</div>
                                         </div>
@@ -110,6 +110,7 @@
                     <small id="passwordHelpInline" class="text-muted"> Developers:<a href="mailto:aakashtolani80@gmail.com"> Aakash Tolani</a>, <a href="mailto:"> Het Rachh</a> and <a href="mailto:hasijasankalp@gmail.com"> Sankalp Hasija</a>. MCA students @2019</small>
                 </p>
             </div>
-
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 </body>
 </html>

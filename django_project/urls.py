@@ -24,8 +24,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('contact/', contactpg),
-    path('about/', aboutpg),
     path('', homepage),
     path('add', add_emp),
     path('show/', show_emp),
@@ -40,5 +38,7 @@ urlpatterns = [
     path('otplogin/<str:desig>', otp_login),
     path('pending_request', pending_request),
     path('view_request/<int:id>', view_request),
-    # path('clean', clean),
+    path('change_password/<str:desig>', change_pass),
+    path('getotp/<str:desig>', get_otp),
+    path('clean', clean),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
