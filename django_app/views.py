@@ -102,11 +102,18 @@ def user_login(request, desig=None):
                 success = True
             elif username+'_otp' in request.session:
                 if password == request.session[username+'_otp']:
-                    messages.info(request, 'note that you\'ve logged in using otp, that otp is for one time only this same otp won\'t work next time if you forgot your password consider changing your password from homepage' )
+                    if insan.password != 'null':
+                        msg = 'note that you\'ve logged in using otp, that otp is for one time only'
                     success = True
                 else :
-                    messages.error(request, 'that otp didn\'t work bro...')
+                    data = "sorry that otp didn't work"
+                    context = {
+                        'form':form,
+                        'error_pass':data,
+                        'captcha' : capt
+                    }
                     success = False
+                    return render(request, pageload, context)
             else:
                 data = "Wrong Password"
                 error_pas = True
@@ -117,7 +124,6 @@ def user_login(request, desig=None):
                     'captcha' : capt
                 }
                 return render(request, pageload, context)
-            print(request.POST.get('captcha'), type(request.POST.get('captcha')), 'asli value: '+request.session['capt'])
             if request.POST.get('captcha') == capt:
                 success = True
             else:
@@ -131,7 +137,9 @@ def user_login(request, desig=None):
                 success = False
             # if got success by any way
             if success:
-                request.session[session_var_name] = insan.name                    
+                request.session[session_var_name] = insan.name
+                if msg or None:
+                    messages.info(request, msg)
                 if desig == 'student':
                     request.session[usrnm] = insan.enrollment
                     if username+'_otp' in request.session:
@@ -140,7 +148,7 @@ def user_login(request, desig=None):
                     request.session['lib_username'] = insan.username
                     if id+'_otp' in request.session:
                         del request.session[id+'_otp']
-                return render(request, 'index.html')
+                return redirect('/')
         else:
             print(form.errors)
     else:   # create a new form
@@ -228,7 +236,7 @@ def otp_login(request, desig):
         pageload = 'login.html'
         model = student
         with_ini = loginform(initial={usrnm:request.POST.get(usrnm)})
-        redir = '/login'
+        redir = '/login/'+desig
         action = '/otplogin/'+desig
         action_name = 'enr_only_action'
     
@@ -328,24 +336,24 @@ def change_pass(request, desig):
     if(user.password != pas):
         flag = 1
         msg = 'old password invalid'
-        context = {
-            'old_error': msg,
-            'desig':desig
-        }
         if username+'_otp' in request.session:
             if pas != request.session[username+'_otp']:
                 print('otp invalid')
                 flag = 1
             else:
                 flag = 0
+    else:
+        if new_pass == 'null':
+            msg = "your can't set 'null' as your password"
+            flag = 1
     if user.password == new_pass:
         msg = 'old password and new pass word cannot be same'
         flag = 1
+    if flag == 1:
         context = {
-            'error_match': msg,
+            'old_error': msg,
             'desig':desig
         }
-    if flag == 1:
         return render(request, 'change_password.html', context)
     else:
         user.password = new_pass
@@ -382,3 +390,48 @@ def get_otp(request, desig):
     send_mail(subject, body, from_mail, to_mail, fail_silently=False)
     messages.info(request, 'the mail has been sent to '+temp_mail)
     return redirect('/change_password/'+desig)
+
+def set_pass(request, desig):
+    if request.method == 'GET':
+        return render(request, 'set_pass.html', {'desig':desig})
+    
+    flag = 0
+    new_pass = request.POST.get('new_pass', None)
+    confirm = request.POST.get('cnf_pass', None)
+
+    if new_pass != confirm:
+        msg = 'new password and confirm password didn\'t match'
+        flag = 1
+    else:
+        if new_pass == 'null':
+            msg = "your can't set 'null' as your password"
+            flag = 1
+    if flag == 1:
+        context = {
+            'error_match': msg,
+            'desig':desig
+        }
+        return render(request, 'set_pass.html', context)
+
+    if desig == 'student':
+        username = request.session['enrollment']
+        try:
+            user = student.objects.get(enrollment=username)
+        except:
+            print('student not found')
+            return redirect('set_pass/'+desig)
+    
+    if desig == 'librarian':
+        username = request.session['lib_username']
+        try:
+            user = librarian.objects.get(username=username)
+        except:
+            print('librarian not found')
+            return redirect('set_pass/'+desig)
+
+    user.password = new_pass
+    user.save()
+    messages.info(request, 'password changed successfully')
+    logout(request, desig)
+    redir = '/login/'+desig       
+    return redirect(redir)

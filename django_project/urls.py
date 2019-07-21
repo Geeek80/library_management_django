@@ -39,6 +39,7 @@ urlpatterns = [
     path('pending_request', pending_request),
     path('view_request/<int:id>', view_request),
     path('change_password/<str:desig>', change_pass),
+    path('set_pass/<str:desig>', set_pass),
     path('getotp/<str:desig>', get_otp),
     path('clean', clean),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
