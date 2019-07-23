@@ -10,7 +10,7 @@ def homepage(request):
     if 'lib_name' in request.session:
         user = librarian.objects.get(name = request.session['lib_name'])
         desig = 'librarian'
-    if user.password=='null':
+    if user.password=='' or user.password == None:
         return redirect('/set_pass/'+desig)
     else:
         return render(request, "index.html")

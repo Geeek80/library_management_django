@@ -102,7 +102,7 @@ def user_login(request, desig=None):
                 success = True
             elif username+'_otp' in request.session:
                 if password == request.session[username+'_otp']:
-                    if insan.password != 'null':
+                    if insan.password != '' or insan.password != None:
                         msg = 'note that you\'ve logged in using otp, that otp is for one time only'
                     success = True
                 else :
@@ -227,7 +227,13 @@ def upload_csv(request):
             _, created = student.objects.update_or_create(
                 name=col[0],
                 enrollment=col[1],
-                password=col[2]
+                password=col[2],
+                phone_no = col[3],
+                resi_address = col[4],
+                semester = col[5],
+                division = col[6],
+                rollno = col[7],
+                email = col[8],
             )
         return render(request, 'show_emp.html', {'empdata':students, 'error':'the data has been uploaded'})
     else:
@@ -345,10 +351,6 @@ def change_pass(request, desig):
                 flag = 1
             else:
                 flag = 0
-    else:
-        if new_pass == 'null':
-            msg = "your can't set 'null' as your password"
-            flag = 1
     if user.password == new_pass:
         msg = 'old password and new pass word cannot be same'
         flag = 1
@@ -405,10 +407,6 @@ def set_pass(request, desig):
     if new_pass != confirm:
         msg = 'new password and confirm password didn\'t match'
         flag = 1
-    else:
-        if new_pass == 'null':
-            msg = "your can't set 'null' as your password"
-            flag = 1
     if flag == 1:
         context = {
             'error_match': msg,

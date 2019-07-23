@@ -1,5 +1,2 @@
-name,enrollment,password
-ashok,134224,tolani
-meena,0090,tolani
-ravi,2343,tolani
-sanjana,23432,tolani
+name,enrollment,password,phone,resi_address,semester,division,rollno,email
+ashok,134224,,89898,surat,4,b,40,email@email.com
