@@ -20,7 +20,7 @@ def add_emp(request):
                 form.save()
                 return redirect("/show")
             except:
-                pass
+                print(form.errors)
         else:
             print(form.errors)
     else:   # create a new form
@@ -97,7 +97,7 @@ def user_login(request, desig=None):
                     'captcha': capt
                 }
                 return render(request, pageload, context)
-            
+            msg = None
             if password == insan.password:
                 success = True
             elif username+'_otp' in request.session:
@@ -164,7 +164,7 @@ def my_request(request):
         try:
             trans = transaction.objects.get(student_enrollment=request.session['enrollment'])
         except:
-            pass   
+            pass
     return render(request, 'my_request.html', {'transaction_data':trans})
 
 def requestt(request):
@@ -181,6 +181,7 @@ def requestt(request):
 
             if newform.amount > 3000:
                 messages.info(request, 'amount of library fee can not be greater than 3000')
+                return redirect('/request')
             min_date = datetime.date.today() - datetime.timedelta(days=183)
             if newform.receipt_date > datetime.date.today() or min_date < newform.receipt_date:
                 messages.info(request, 'date cannot be greater than '+str(min_date)+' bro')
@@ -227,7 +228,8 @@ def upload_csv(request):
                 password=col[2]
             )
         return render(request, 'show_emp.html', {'empdata':students, 'error':'the data has been uploaded'})
-    return redirect('/show')
+    else:
+        return redirect('/show')
 
 def otp_login(request, desig):
     if desig == 'student':
@@ -284,11 +286,10 @@ def pending_request(request):
         pendings = None
     return render(request, "pending_request.html", {'pending_data':pendings})
 
-def view_request(request, id):
+def view_request(request, id, extra_context=None):
     request_data = transaction.objects.get(id = id)
     student_data = student.objects.get(enrollment = request_data.student_enrollment)
-    # print(request_data.fee_receipt_image)
-    return render(request, 'view_request.html', {'data':request_data, 'student':student_data})
+    return render(request, 'view_request.html', {'data':request_data, 'student':student_data, 'reason':extra_context})
 
 def clean(request):
     for key in list(request.session.keys()):
@@ -435,3 +436,32 @@ def set_pass(request, desig):
     logout(request, desig)
     redir = '/login/'+desig       
     return redirect(redir)
+
+def image_view(request, id):
+    id,typ = id.split()
+    data = transaction.objects.get(id=id)
+    if typ == 'cheque':
+        string = data.cancelled_cheque_image.url
+    if typ == 'fee_receipt':
+        string = data.fee_receipt_image.url
+    return render(request, 'image_view.html', {'source':string})
+
+def decide(request, id):
+    id,decision = id.split()
+        
+    if decision == 'request':
+        return view_request(request, id, True)
+
+    if decision == 'approved':
+        msg = 'request no '+id+' Documents verified, request '+decision+' and the mail has been sent to respective student'
+        messages.info(request, msg)
+    if decision == 'rejected':
+        reason = request.POST.get('reason', '')
+        print(request, reason)
+        msg = 'request no '+id+' is '+decision+' because, '+reason+' mail has been sent to respective student'
+        messages.error(request, msg)
+    
+    data = transaction.objects.get(id=id)
+    data.status = decision
+    data.save()
+    return redirect('/pending_request')

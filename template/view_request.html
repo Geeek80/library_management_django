@@ -5,20 +5,37 @@
 {% endblock %}
 
 {% block content %}
-    <table>
-        <tr> 
-            Name : {{ student.name }}
-        </tr>
-       
-        <tr>
-            receipt No: {{ data.id }}
-        </tr>
-    </table>
     <div class="containter">
+            <a href="/decide/{{ data.id }} approved"><button type="button" class="btn btn-success">Approve Request</button></a>
+            <form {% if reason %} method="POST" {% endif %}" action="/decide/{{ data.id }} rejected">
+            {% csrf_token %}
+            {% if reason %}
+            <div class="form-group has-danger">
+                <label class="form-control-label" for="inputDanger1">Reason :</label>
+                <input type="text" name="reason" placeholder="reason to reject request" class="form-control is-invalid" required>
+                <div class="invalid-feedback">why did you reject this request?</div>
+            {% endif %}
+            
+            {% if not reason %} 
+            <a href="/decide/{{ data.id }} request">
+            {% endif %}
+                <button type=" {% if reason %} submit {% else %} button {% endif %}" class="btn btn-danger">Reject Request</button>
+            {% if not reason %} </a>{% endif %} 
+            </form>
+        <table>
+            <tr> 
+                Name : {{ student.name }}
+            </tr>
+        
+            <tr>
+                receipt No: {{ data.id }}
+            </tr>
+        </table>
+    
         {% if data.fee_receipt_image != '' %}
-            <img src="{{ data.fee_receipt_image.url }}" class="img-fluid " width="500" alt="Receipt Image">
+        <a href="/image_view/{{ data.id }} fee_receipt"><img src="{{ data.fee_receipt_image.url }}" class="img-fluid " width="500" alt="Receipt Image">
         {% endif %}
-        <img src="{{ data.cancelled_cheque_image.url }}" class="img-fluid " width="500" alt="Cancelled cheque Image">
+        <a href="/image_view/{{ data.id }} cheque"><img src="{{ data.cancelled_cheque_image.url }}" class="img-fluid" width="500" alt="Cancelled cheque Image"></a>
     </div>
     <form action="/approve_request/{{data.id}}" class="mt-4">
         <button type="submit" class="btn btn-info">Approve Request</button>

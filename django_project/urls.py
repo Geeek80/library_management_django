@@ -41,5 +41,7 @@ urlpatterns = [
     path('change_password/<str:desig>', change_pass),
     path('set_pass/<str:desig>', set_pass),
     path('getotp/<str:desig>', get_otp),
+    path('image_view/<str:id>', image_view),
+    path('decide/<str:id>', decide),
     path('clean', clean),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
