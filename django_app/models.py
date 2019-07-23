@@ -16,6 +16,11 @@ class student(models.Model):
     name = models.CharField(max_length=20)
     enrollment = models.CharField(max_length=15)
     password = models.CharField(max_length=21, null=True)
+    phone_no = models.CharField(max_length=13, null=True)
+    resi_address = models.CharField(max_length=150)
+    semester = models.IntegerField()
+    division = models.CharField(max_length=5)
+    rollno = models.IntegerField()
     email = models.EmailField()
     class Meta:
         db_table = 'student'
@@ -30,8 +35,8 @@ class librarian(models.Model):
 
 class transaction(models.Model):
     date = models.DateTimeField(auto_now = True)
-    receipt_no = models.IntegerField(null=True)
-    receipt_date = models.DateField()
+    receipt_no = models.IntegerField(null=True, blank=True)
+    receipt_date = models.DateField(blank=True, null=True)
     amount = models.IntegerField()
     student_enrollment= models.CharField(max_length=15, unique=True)
     status = models.CharField(max_length=15, blank=True)

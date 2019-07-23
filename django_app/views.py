@@ -182,10 +182,12 @@ def requestt(request):
             if newform.amount > 3000:
                 messages.info(request, 'amount of library fee can not be greater than 3000')
                 return redirect('/request')
-            min_date = datetime.date.today() - datetime.timedelta(days=183)
-            if newform.receipt_date > datetime.date.today() or min_date < newform.receipt_date:
-                messages.info(request, 'date cannot be greater than '+str(min_date)+' bro')
-                return redirect('/request')
+            
+            if newform.receipt_date != None:
+                min_date = datetime.date.today() - datetime.timedelta(days=183)
+                if newform.receipt_date > datetime.date.today() or min_date < newform.receipt_date:
+                    messages.info(request, 'date cannot be greater than '+str(min_date)+' bro')
+                    return redirect('/request')
             
             if 'fee_receipt_image' not in request.FILES:
                 newform.amount -= 100
@@ -444,6 +446,12 @@ def image_view(request, id):
         string = data.cancelled_cheque_image.url
     if typ == 'fee_receipt':
         string = data.fee_receipt_image.url
+    if typ == 'passbook':
+        string = data.passbook_image.url
+    if typ == 'last_sem':
+        string = data.last_sem_fee_image.url
+    if typ == 'grade':
+        string = data.grade_history_image.url
     return render(request, 'image_view.html', {'source':string})
 
 def decide(request, id):
