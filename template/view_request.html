@@ -7,7 +7,7 @@
 {% block content %}
     <div class="containter">
             <a href="/decide/{{ data.id }} approved"><button type="button" class="btn btn-success">Approve Request</button></a>
-            <form {% if reason %} method="POST" {% endif %}" action="/decide/{{ data.id }} rejected">
+            <form {% if reason %} method="POST" action="/decide/{{ data.id }} rejected" {% endif %} >
             {% csrf_token %}
             {% if reason %}
             <div class="form-group has-danger">
@@ -17,9 +17,9 @@
             {% endif %}
             
             {% if not reason %} 
-            <a href="/decide/{{ data.id }} request">
+                <a href="/decide/{{ data.id }} request">
             {% endif %}
-                <button type=" {% if reason %} submit {% else %} button {% endif %}" class="btn btn-danger">Reject Request</button>
+                <button {% if reason %} type="submit" {% else %} type="button" {% endif %} class="btn btn-danger">Reject Request</button>
             {% if not reason %} </a>{% endif %} 
             </form>
         <table>

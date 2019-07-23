@@ -286,10 +286,10 @@ def pending_request(request):
         pendings = None
     return render(request, "pending_request.html", {'pending_data':pendings})
 
-def view_request(request, id, extra_context=None):
+def view_request(request, id):
     request_data = transaction.objects.get(id = id)
     student_data = student.objects.get(enrollment = request_data.student_enrollment)
-    return render(request, 'view_request.html', {'data':request_data, 'student':student_data, 'reason':extra_context})
+    return render(request, 'view_request.html', {'data':request_data, 'student':student_data})
 
 def clean(request):
     for key in list(request.session.keys()):
@@ -448,20 +448,27 @@ def image_view(request, id):
 
 def decide(request, id):
     id,decision = id.split()
+    data = transaction.objects.get(id = id)
+    student_data = student.objects.get(enrollment = data.student_enrollment)
         
     if decision == 'request':
-        return view_request(request, id, True)
-
-    if decision == 'approved':
-        msg = 'request no '+id+' Documents verified, request '+decision+' and the mail has been sent to respective student'
-        messages.info(request, msg)
-    if decision == 'rejected':
-        reason = request.POST.get('reason', '')
-        print(request, reason)
-        msg = 'request no '+id+' is '+decision+' because, '+reason+' mail has been sent to respective student'
-        messages.error(request, msg)
-    
-    data = transaction.objects.get(id=id)
-    data.status = decision
-    data.save()
-    return redirect('/pending_request')
+        return render(request, 'view_request.html', {'data':data, 'student':student_data, 'reason':True})
+    else:
+        data.status = decision
+        if decision == 'approved':
+            msg = 'request no '+id+' Documents verified, request '+decision+' and the mail has been sent to respective student'
+            messages.info(request, msg)
+            body = 'your request for library fee refund has been '+decision+'\nAmount of Rs.'+str(data.amount)+' will be transfered to your account soon\ncontact library for more details'
+        if decision == 'rejected':
+            reason = request.POST.get('reason', '')
+            data.reason = reason
+            msg = 'request no '+id+' is '+decision+' because, '+reason+', mail has been sent to respective student'
+            messages.error(request, msg)
+            body = 'your request for library fee refund has been '+decision+'\n because, '+reason+'\ncontact library for more details'
+        data.save()
+        
+        subject = 'noreply@libraryfeerefund.com'
+        from_mail = settings.EMAIL_HOST_USER
+        to_mail = [student_data.email]
+        send_mail(subject, body, from_mail, to_mail, fail_silently=False)
+        return redirect('/pending_request')

@@ -35,6 +35,7 @@ class transaction(models.Model):
     amount = models.IntegerField()
     student_enrollment= models.CharField(max_length=15, unique=True)
     status = models.CharField(max_length=15, blank=True)
+    reason = models.CharField(max_length=256, null=True)
     fee_receipt_image = models.FileField(upload_to="images/", blank=True)
     cancelled_cheque_image = models.FileField(upload_to="images/")
     passbook_image = models.FileField(upload_to="images/")
