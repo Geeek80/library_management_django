@@ -94,7 +94,8 @@
                       </tr>
                     </tbody>
                   </table>
-        <div class="container">
+        <div class="containter w-75 text-center">
+        <div class="d-inline-block">
             <h4>1. library fee receipt image : </h4>
             {% if data.fee_receipt_image != '' %}
             <a href="/image_view/{{ data.id }} fee_receipt">
@@ -104,19 +105,20 @@
                 <p>not available</p>
             {% endif %}
         </div>
-        <div class="containter">
+        <div class=" d-inline-block">
             <h4>2. Cancelled Cheque Image : </h4>
             <a href="/image_view/{{ data.id }} cheque">
                 <img src="{{ data.cancelled_cheque_image.url }}" class="img-fluid" width="500" alt="Cancelled cheque Image">
             </a>
         </div>
-        <div class="containter">
+        
+        <div class="d-inline-block">
             <h4>3. Passbook Front Page Image : </h4>
             <a href="/image_view/{{ data.id }} passbook">
                 <img src="{{ data.passbook_image.url }}" class="img-fluid" width="500" alt="Cancelled cheque Image">
             </a>
         </div>
-        <div class="containter">
+        <div class="d-inline-block">
             <h4>4. Last Sem Fee Receipt Image : </h4>
             {% if data.last_sem_fee_image != '' %}
             <a href="/image_view/{{ data.id }} last_sem">
@@ -126,7 +128,7 @@
                 <p>Not Available</p>
             {% endif %}
         </div>
-        <div class="containter">
+        <div class="d-inline-block">
             <h4>5. Grade History Image : </h4>
             <a href="/image_view/{{ data.id }} grade">
                 <img src="{{ data.grade_history_image.url }}" class="img-fluid" width="500" alt="Cancelled cheque Image">
@@ -151,6 +153,7 @@
         {% if not reason %} </a>{% endif %} 
         </form>
         </div>
+    </div>
     </div>
     
 {% endblock %}

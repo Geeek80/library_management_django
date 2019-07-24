@@ -81,6 +81,7 @@
                         <th scope="row">Phone No.</th>
                         <td>{{user.phone_no}}</td>
                       </tr>
+                      {% if user.enrollment %}
                       <tr>
                         <th scope="row">Enrollment No.</th>
                         <td>{{user.enrollment}}</td>
@@ -93,6 +94,7 @@
                         <th scope="row">Division</th>
                         <td>{{user.division}}</td>
                       </tr>
+                      {% endif %}
                     </tbody>
                   </table>
     </div>

@@ -8,6 +8,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 import random
 import datetime
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 
 # Create your views here.
@@ -30,7 +32,11 @@ def add_emp(request):
 # @login_required
 def show_emp(request):
     employee = student.objects.all()
-    return render(request, "show_emp.html", {'empdata':employee})
+    context = {}
+    context_name = 'empdata'
+    print('requested page from show_emp'+str(request.GET.get('page')))
+    pagi(request, employee, context_name, context)
+    return render(request, "show_emp.html", context)
 
 # @login_required
 def edit_emp(request, id):
@@ -303,6 +309,7 @@ def clean(request):
     for key in list(request.session.keys()):
         del request.session[key]
     return redirect('/login/student')
+    
 
 def is_logged_in(request):
     if 'name' in request.session:
@@ -505,3 +512,29 @@ def deduct(request, id):
             'deduct':request.GET.get('outstanding')
         }
         return render(request, 'view_request.html', context)
+
+def pagi(request, data, context_name, context):
+    pagination = Paginator(data, 5)
+    page = request.GET.get('page') #page we are on
+    try:
+        items = pagination.page(page)   # load data of said page
+    except PageNotAnInteger:
+        items = pagination.page(1)  # if the page is not int show first page
+    except EmptyPage:
+        items = pagination.page(pagination.num_pages)   # if empty page show last page
+    
+    index = items.number - 1
+    max_index = len(pagination.page_range)
+    start_index = index - 5 if index >= 5 else 0
+    end_index = index + 5 if index <= max_index - 5 else max_index
+    page_range = pagination.page_range[start_index : end_index]
+    # the above calulations was to display -2 and +2 page numbers from current page
+    # so that we always have only 5 pages in pagination listing
+
+    context.update(
+        {
+            'page_range':page_range,
+            'items':items,
+            context_name:items
+        }
+    )
