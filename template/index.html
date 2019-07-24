@@ -65,8 +65,37 @@
           {% endfor %}
       </ul>
     {% endif %}
-    <h1>hey there {{ request.session.name }} {{ request.session.lib_name }} i'm your template... and that's it
-    </h1>
+    <div class="containter">
+            <table class="table table-striped">
+                    <tbody>
+                    
+                      <tr>
+                        <th scope="row">Name</th>
+                        <td>{{user.name}}</td>
+                        <th scope="row">Residential address</th>
+                        <td>{{user.resi_address}}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Email</th>
+                        <td>{{user.email}}</td>
+                        <th scope="row">Phone No.</th>
+                        <td>{{user.phone_no}}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Enrollment No.</th>
+                        <td>{{user.enrollment}}</td>
+                        <th scope="row">Student Roll No.</th>
+                        <td>{{user.rollno}}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Semester</th>
+                        <td>{{user.semester}}</td>
+                        <th scope="row">Division</th>
+                        <td>{{user.division}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+    </div>
     {% endblock %}
 
    

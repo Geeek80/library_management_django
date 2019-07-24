@@ -33,7 +33,7 @@
                             <div style="color:red;">{{ error_pass }}</div>
                     {% endif %}
                 </div>
-
+                {% if not username_only_action %}
                 <div class="form-group">
                         <label
                                 {% if error_captcha %}
@@ -42,7 +42,8 @@
                                 class="col-form-label mb-2" for="inputDefault">Captcha : </label> <span class='captcha'><s>{{ captcha }}</span></s>  
                                     <input type="text" name="captcha" required>
                                     <div style="color:red;">{{ error_captcha }}</div>
-                        </div>
+                </div>
+                {% endif %}
 
             <div>
                 <input type="submit" class="btn btn-primary" value=

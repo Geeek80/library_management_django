@@ -467,7 +467,7 @@ def decide(request, id):
             body = 'your request for library fee refund has been '+decision+'\nAmount of Rs.'+str(data.amount)+' will be transfered to your account soon\ncontact library for more details'
         if decision == 'rejected':
             reason = request.POST.get('reason', '')
-            data.reason = reason
+            data.reason += '\n'+reason
             msg = 'request no '+id+' is '+decision+' because, '+reason+', mail has been sent to respective student'
             messages.error(request, msg)
             body = 'your request for library fee refund has been '+decision+'\n because, '+reason+'\ncontact library for more details'
@@ -478,3 +478,30 @@ def decide(request, id):
         to_mail = [student_data.email]
         send_mail(subject, body, from_mail, to_mail, fail_silently=False)
         return redirect('/pending_request')
+
+def deduct(request, id):
+    data = transaction.objects.get(id = id)
+    student_data = student.objects.get(enrollment = data.student_enrollment)
+    if request.method == 'POST':
+        deduct = int(request.POST.get('outstanding', 0))
+        reason = request.POST.get('out_reason', "")
+        if deduct > 0 and reason != "":
+            data.amount -= deduct
+            data.save()
+            messages.info(request, 'the charges have been deducted from amount because '+reason+' the mail has been sent to '+student_data.name)
+            
+            data.reason = reason
+            msg = 'amout of Rs.'+str(deduct)+' has been deducted from your library fee refund\nbecause, '+reason+', contact library for more details'
+            
+            subject = 'noreply@libraryfeerefund.com'
+            from_mail = settings.EMAIL_HOST_USER
+            to_mail = [student_data.email]
+            send_mail(subject, msg, from_mail, to_mail, fail_silently=False)
+            return redirect('/view_request/'+id)
+    else:
+        context = {
+            'data':data,
+            'student':student_data,
+            'deduct':request.GET.get('outstanding')
+        }
+        return render(request, 'view_request.html', context)

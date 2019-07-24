@@ -13,4 +13,4 @@ def homepage(request):
     if user.password=='' or user.password == None:
         return redirect('/set_pass/'+desig)
     else:
-        return render(request, "index.html")
+        return render(request, "index.html", {'user':user})
