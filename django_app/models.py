@@ -34,13 +34,14 @@ class librarian(models.Model):
         db_table = 'librarian'
 
 class transaction(models.Model):
-    date = models.DateTimeField(auto_now = True)
+    date = models.DateTimeField(auto_now_add = True)
     receipt_no = models.IntegerField(null=True, blank=True)
     receipt_date = models.DateField(blank=True, null=True)
     amount = models.IntegerField()
     student_enrollment= models.CharField(max_length=15, unique=True)
     status = models.CharField(max_length=15, blank=True)
     reason = models.CharField(max_length=256, null=True)
+    action_date = models.DateTimeField(blank = True)
     fee_receipt_image = models.FileField(upload_to="images/", blank=True)
     cancelled_cheque_image = models.FileField(upload_to="images/")
     passbook_image = models.FileField(upload_to="images/")

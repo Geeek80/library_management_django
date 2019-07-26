@@ -4,11 +4,11 @@
             <ul class='pagination'>
                 {% if items.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{items.previous_page_number}}"><<</a>
+                        <a class="page-link" href="?page={{items.previous_page_number}}">&laquo;</a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">
-                        <a class="page-link"><span><<</span></a>
+                        <a class="page-link"><span>&laquo;</span></a>
                     </li>
                 {% endif %}
                 {% for i in page_range %}
@@ -24,11 +24,11 @@
                 {% endfor %}
                 {% if items.has_next %}
                     <li class="page-item">
-                        <a class='page-link' area-label="Next" href="?page={{items.next_page_number}}">>></a>
+                        <a class='page-link' area-label="Next" href="?page={{items.next_page_number}}">&raquo;</a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">
-                        <a href="" class="page-link"><span>>></span></a>
+                        <a href="" class="page-link"><span>&raquo;</span></a>
                     </li>
                 {% endif %}
             </ul>

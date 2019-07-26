@@ -1,4 +1,4 @@
-import csv, io
+import csv, io, re, random, datetime
 from django.shortcuts import render, redirect
 from django_app.forms import employeeform, loginform, fee_request_form, libloginform
 from django_app.models import mymodel, student, transaction, librarian
@@ -6,8 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
-import random
-import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
@@ -478,6 +476,7 @@ def decide(request, id):
             msg = 'request no '+id+' is '+decision+' because, '+reason+', mail has been sent to respective student'
             messages.error(request, msg)
             body = 'your request for library fee refund has been '+decision+'\n because, '+reason+'\ncontact library for more details'
+        data.action_date = datetime.datetime.now()
         data.save()
         
         subject = 'noreply@libraryfeerefund.com'
@@ -538,3 +537,41 @@ def pagi(request, data, context_name, context):
             context_name:items
         }
     )
+
+def generate_report(request):
+    if request.method == 'POST':
+        moye = request.POST.get('moye')
+        month = int(moye.split("/")[0])
+        year = int(moye.split("/")[1])
+        if not re.match(r'\d{1,2}/\d{4}', moye):
+            messages.error(request, 'invalid input : '+moye)
+            return redirect('/report')
+        
+        if month > 12 or month < 1:
+            messages.error(request, "invalid month {}".format(month))
+            return redirect("/report")
+
+        if year < 2000 or year > datetime.datetime.now().year:
+            messages.error(request, "year cannot be less than 2000 and greater than current year")
+            return redirect('/report')
+        
+        
+        data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
+        if data.exists():
+            total = 0
+            for i in data:
+                total += i.amount
+            context = {
+                'data':data,
+                'sum':total,
+                'month':month,
+                'year':year,
+                'count':data.count()
+            }
+            return render(request, 'report.html', context)
+        else:
+            
+            messages.info(request, 'we don\'t have data of '+moye)
+        return redirect('/report')
+    else:
+        return render(request, 'report.html')

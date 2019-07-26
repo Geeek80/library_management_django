@@ -30,6 +30,9 @@
                       <li class="nav-item">
                         <a class="nav-link" href="/change_password/student">Change Password</a>
                       </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/logout/student">Logout</a>
+                      </li>
                     {% endif %}
                     {% if 'lib_name' in request.session %}
                       <li class="nav-item">
@@ -39,14 +42,13 @@
                           <a class="nav-link" href="/show">Show All Records</a>
                       </li>
                       <li class="nav-item">
+                        <a class="nav-link" href="/report">Generate Reports</a>
+                      </li>
+                      <li class="nav-item">
                           <a class="nav-link" href="/change_password/librarian">Change Password</a>
-                        </li>
+                      </li>
                       <li class="nav-item">
                           <a class="nav-link" href="/logout/librarian">Logout</a>
-                      </li>
-                    {% elif 'name' in request.session %}
-                      <li class="nav-item">
-                        <a class="nav-link" href="/logout/student">Logout</a>
                       </li>
                     {% endif %}
                   </ul>

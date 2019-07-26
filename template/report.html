@@ -1,0 +1,70 @@
+{% extends 'index.html' %}
+{% block title %} - Reports{% endblock %}
+{% block content %}
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if 'error' in message.tags %} style="color:red"{% else %}class="text-info"{% endif %}><b>{{ message }}</b></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if not data %}
+<div class="jumbotron vertical-center">
+<div class="col-md-4 container">
+        <form method="POST" action="/report">
+            {% csrf_token %}
+        <fieldset>							
+                
+            <div class="form-group">
+                <label class="col-form-label" for="inputDefault">Month and Year:</label>
+                    <input class="form-control" type="text" name="moye" placeholder="mm/yy" required>
+            </div>
+
+            <div>
+                <input type="submit" class="btn btn-primary" value="Get Report">
+            </div>
+                 
+         </fieldset>
+        </form>
+</div>
+</div>
+{% else %}
+    <div class="containter text-center">
+        <h3 class="display-4 mt-4 mb-4">
+            Report for {{ month }} - {{ year }}
+        </h3>
+        <table class="table table-striped">
+                <tbody>
+                    
+                  <tr>
+                    <th scope="row">Total Records</th>
+                    <td><b>{{ count }}</b></td>
+                    <th scope="row">Total Amount</th>
+                    <td><b>{{ sum }}</b></td>
+                  </tr>
+                  <tr>
+                    <th>Application No.</th>
+                    <th>Receipt No.</th>
+                    <th>Date Requested</th>
+                    <th>Date Approved</th>
+                    <th>Enrollment</th>
+                    <th>Amount</th>
+                </tr>
+                  {% for row in data %}
+                  <tr>
+                    
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.receipt_no }}</td>
+                    <td>{{ row.date }}</td>
+                    <td>{{ row.action_date }}</td>
+                    <td>{{ row.student_enrollment }}</td>
+                    <td>{{ row.amount }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+    </div>
+{% endif %}
+{% endblock %}

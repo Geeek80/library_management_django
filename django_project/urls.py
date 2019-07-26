@@ -44,5 +44,6 @@ urlpatterns = [
     path('image_view/<str:id>', image_view),
     path('decide/<str:id>', decide),
     path('deduct/<str:id>', deduct),
+    path('report', generate_report),
     path('clean', clean),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
