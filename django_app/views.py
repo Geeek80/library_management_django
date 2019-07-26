@@ -28,13 +28,12 @@ def add_emp(request):
     return render(request, "add_emp.html", {'form':form})
 
 # @login_required
-def show_emp(request):
-    employee = student.objects.all()
+def all_requests(request):
+    data = transaction.objects.all()
     context = {}
-    context_name = 'empdata'
-    print('requested page from show_emp'+str(request.GET.get('page')))
-    pagi(request, employee, context_name, context)
-    return render(request, "show_emp.html", context)
+    context_name = 'data'
+    pagi(request, data, context_name, context)
+    return render(request, "all_requests.html", context)
 
 # @login_required
 def edit_emp(request, id):

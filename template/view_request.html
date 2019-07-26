@@ -14,7 +14,9 @@
                 {% endfor %}
             </ul>
             {% endif %}
-            
+        
+        {% if data.status == 'pending' %}
+        
         <div class="container d-inline-block text-center"> 
             <a href="/decide/{{ data.id }} approved"><button type="button" class="btn btn-success">Approve Request</button></a>
             <form {% if reason %} method="POST" action="/decide/{{ data.id }} rejected" {% endif %} class="d-inline-block ml-4 mt-2 mb-2">
@@ -32,8 +34,9 @@
                 <button {% if reason %} type="submit" {% else %} type="button" {% endif %} class="btn btn-danger">Reject Request</button>
             {% if not reason %} </a>{% endif %} 
             </form>
-        </div>   
-            <table class="table table-striped">
+        </div>  
+        {% endif %} 
+            <table class="table table-striped mt-4">
                     <tbody>
                       <tr>
                         <th scope="row">Application No.</th>
@@ -92,9 +95,22 @@
                         <th scope="row">Division</th>
                         <td>{{student.division}}</td>
                       </tr>
+                    {% if data.status != 'pending' %}
+                      <tr>
+                        <th scope="row">Status</th>
+                        <td>{{data.status}}</td>
+                        <th scope="row">{{data.status}} Date</th>
+                        <td>{{data.action_date}}</td>
+                        
+                      </tr>
+                      <tr>
+                        <th scope="row">Reason</th>
+                        <td>{{data.reason}}</td>
+                      </tr>
+                    {% endif %}
                     </tbody>
                   </table>
-        <div class="containter w-75 text-center">
+        <div class="containter w-75 text-center mt-5">
         <div class="d-inline-block">
             <h4>1. library fee receipt image : </h4>
             {% if data.fee_receipt_image != '' %}
@@ -135,6 +151,8 @@
             </a>
         </div>
 
+        {% if data.status == 'pending' %}
+
         <div class="container d-inline-block text-center"> 
         <a href="/decide/{{ data.id }} approved"><button type="button" class="btn btn-success">Approve Request</button></a>
         <form {% if reason %} method="POST" action="/decide/{{ data.id }} rejected" {% endif %} class="d-inline-block ml-4 mt-2 mb-2">
@@ -153,6 +171,7 @@
         {% if not reason %} </a>{% endif %} 
         </form>
         </div>
+        {% endif %}
     </div>
     </div>
     

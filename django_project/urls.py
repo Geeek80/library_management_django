@@ -26,7 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', homepage),
     path('add', add_emp),
-    path('show/', show_emp),
+    path('all_requests/', all_requests),
     path('edit/<int:id>', edit_emp),
     path('update/<int:identity>', update_emp),
     path('delete/<int:identity>', delete_emp),
