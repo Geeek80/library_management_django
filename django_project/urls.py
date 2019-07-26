@@ -34,7 +34,6 @@ urlpatterns = [
     path('my_request/', my_request),
     path('request/', requestt),
     path('logout/<str:desig>', logout),
-    path('upload_csv', upload_csv),
     path('otplogin/<str:desig>', otp_login),
     path('pending_request', pending_request),
     path('view_request/<int:id>', view_request),

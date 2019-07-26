@@ -1,4 +1,4 @@
-import csv, io, re, random, datetime
+import re, random, datetime
 from django.shortcuts import render, redirect
 from django_app.forms import employeeform, loginform, fee_request_form, libloginform
 from django_app.models import mymodel, student, transaction, librarian
@@ -215,32 +215,6 @@ def logout(request, desig):
             del request.session['lib_username']
     return redirect('/login/'+desig)
 
-def upload_csv(request):
-    students = student.objects.all()
-    if request.method == "POST":
-        csv_file = request.FILES['document']
-        if not csv_file.name.endswith('.csv'):
-            return render(request, "show_emp.html", {'empdata':students, 'error':"this file isn't csv file"})
-
-        data_set = csv_file.read().decode('UTF-8')
-        io_string = io.StringIO(data_set)
-        next(io_string)
-
-        for col in csv.reader(io_string, delimiter=','):
-            _, created = student.objects.update_or_create(
-                name=col[0],
-                enrollment=col[1],
-                password=col[2],
-                phone_no = col[3],
-                resi_address = col[4],
-                semester = col[5],
-                division = col[6],
-                rollno = col[7],
-                email = col[8],
-            )
-        return render(request, 'show_emp.html', {'empdata':students, 'error':'the data has been uploaded'})
-    else:
-        return redirect('/show')
 
 def otp_login(request, desig):
     if desig == 'student':
