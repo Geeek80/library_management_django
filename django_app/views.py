@@ -268,11 +268,16 @@ def otp_login(request, desig):
         from_mail = settings.EMAIL_HOST_USER
         temp_mail = (insan.email[0:2]) + 'x'*(len(insan.email)-5) + (insan.email[-5:])
         to_mail = [insan.email]
-        otp = str(random.randint(1000, 9999))
-        request.session[username+'_otp'] = otp
-        body = 'your otp for library fee refund system '+desig+' login is '+otp+' login again using this as password do not share this with anyone'
-        send_mail(subject, body, from_mail, to_mail, fail_silently=False)
-        messages.info(request, 'the mail has been sent to '+temp_mail)
+        try:
+            otp = str(random.randint(1000, 9999))
+            request.session[username+'_otp'] = otp
+            body = 'your otp for library fee refund system '+desig+' login is '+otp+' login again using this as password do not share this with anyone'
+            send_mail(subject, body, from_mail, to_mail, fail_silently=False)
+            messages.info(request, 'the mail has been sent to '+temp_mail)
+        except:
+            if username+'_otp' in request.session:
+                del request.session[username+'_otp']
+            messages.error(request, 'could not send email, something went wrong...')
         return redirect(redir)
 
 
@@ -299,8 +304,26 @@ def is_logged_in(request):
     return False
 
 def change_pass(request, desig):
+    if desig == 'student':
+        username = request.session['enrollment']
+        pageload = "change_password.html"
+        try:
+            user = student.objects.get(enrollment=username)
+        except:
+            print('student not found')
+            return render(request, pageload)
+    
+    if desig == 'librarian':
+        username = request.session['lib_username']
+        pageload = "librarian/change_password.html"
+        try:
+            user = librarian.objects.get(username=username)
+        except:
+            print('librarian not found')
+            return render(request, pageload)
+
     if request.method == 'GET':
-        return render(request, 'change_password.html', {'desig':desig})
+        return render(request, pageload, {'desig':desig})
     
     flag = 0
     new_pass = request.POST.get('new_pass', None)
@@ -313,24 +336,8 @@ def change_pass(request, desig):
             'error_match': msg,
             'desig':desig
         }
-        return render(request, 'change_password.html', context)
+        return render(request, pageload, context)
     
-    if desig == 'student':
-        username = request.session['enrollment']
-        try:
-            user = student.objects.get(enrollment=username)
-        except:
-            print('student not found')
-            return render(request, 'change_password.html')
-    
-    if desig == 'librarian':
-        username = request.session['lib_username']
-        try:
-            user = librarian.objects.get(username=username)
-        except:
-            print('librarian not found')
-            return render(request, 'change_password.html')
-        
     if(user.password != pas):
         flag = 1
         msg = 'old password invalid'
@@ -348,7 +355,7 @@ def change_pass(request, desig):
             'old_error': msg,
             'desig':desig
         }
-        return render(request, 'change_password.html', context)
+        return render(request, pageload, context)
     else:
         user.password = new_pass
         user.save()
@@ -378,11 +385,17 @@ def get_otp(request, desig):
     from_mail = settings.EMAIL_HOST_USER
     temp_mail = (user.email[0:2]) + 'x'*(len(user.email)-5) + (user.email[-5:])
     to_mail = [user.email]
-    otp = str(random.randint(1000, 9999))
-    request.session[username+'_otp'] = otp
-    body = 'your otp for library fee refund system '+desig+' login is '+otp+' enter this as old password and do not share this with anyone'
-    send_mail(subject, body, from_mail, to_mail, fail_silently=False)
-    messages.info(request, 'the mail has been sent to '+temp_mail)
+    try:
+        otp = str(random.randint(1000, 9999))
+        request.session[username+'_otp'] = otp
+        body = 'your otp for library fee refund system '+desig+' login is '+otp+' enter this as old password and do not share this with anyone'
+        send_mail(subject, body, from_mail, to_mail, fail_silently=False)
+        messages.info(request, 'the mail has been sent to '+temp_mail)
+    except:
+        if username+'_otp' in request.session:
+            del request.session[username+'_otp']
+        messages.error(request, 'could not send email, something went wrong')
+
     return redirect('/change_password/'+desig)
 
 def set_pass(request, desig):
