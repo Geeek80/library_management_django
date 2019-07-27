@@ -15,7 +15,7 @@ class mymodel(models.Model):
 class student(models.Model):
     name = models.CharField(max_length=20)
     enrollment = models.CharField(max_length=15)
-    password = models.CharField(max_length=21, null=True)
+    password = models.CharField(max_length=21, null=True, blank=True)
     phone_no = models.CharField(max_length=13, null=True)
     resi_address = models.CharField(max_length=150)
     semester = models.IntegerField()

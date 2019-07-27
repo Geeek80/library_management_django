@@ -5,12 +5,23 @@ from django_app.views import set_pass
 
 def homepage(request):
     if 'name' in request.session:
+        user = student.objects.get(name = request.session['name'])
         desig = 'student'
-        user = student.objects.get(name=request.session['name'])
+        if user.password=='' or user.password == None:
+            return redirect('/set_pass/'+desig)
+        else:
+            return render(request, "index.html", {'user':user})
+    else:
+        return redirect('/login/student')
+
+        
+def lib_homepage(request):
     if 'lib_name' in request.session:
         user = librarian.objects.get(name = request.session['lib_name'])
         desig = 'librarian'
-    if user.password=='' or user.password == None:
-        return redirect('/set_pass/'+desig)
+        if user.password=='' or user.password == None:
+            return redirect('/set_pass/'+desig)
+        else:
+            return render(request, "librarian/index.html", {'user':user})
     else:
-        return render(request, "index.html", {'user':user})
+        return redirect('/login/librarian')

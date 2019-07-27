@@ -57,6 +57,9 @@ def delete_emp(request, identity):
     employee.delete()
     return redirect('/show')
 
+def login(request):
+    return render(request, 'entry.html')
+
 def user_login(request, desig=None):
     
     if desig == 'student':
@@ -65,17 +68,25 @@ def user_login(request, desig=None):
         usrnm = 'enrollment'
         model = student
         pageload = 'login.html'
+        success_page = "/home"
         if 'name' in request.session:
-            return redirect('/')
+            return redirect(success_page)
     
     if desig == 'librarian':
         if 'lib_name' in request.session:
-            return redirect('/')
+            return redirect('/lib_home')
         session_var_name = 'lib_name'
         frm = libloginform(request.POST)
         usrnm = 'username'
         model = librarian
         pageload = 'lib_login.html'
+        success_page = "/lib_home"
+        if 'lib_name' in request.session:
+            user = student.objects.get(name=request.session['name'])
+            if user.password=='' or user.password == None:
+                return redirect('/set_pass/'+desig)
+            else:
+                return render(request, "librarian/index.html", {'user':user})
 
     if request.method == "POST":  # if submit clicked
         form = frm
@@ -151,7 +162,7 @@ def user_login(request, desig=None):
                     request.session['lib_username'] = insan.username
                     if id+'_otp' in request.session:
                         del request.session[id+'_otp']
-                return redirect('/')
+                return redirect(success_page)
         else:
             print(form.errors)
     else:   # create a new form
@@ -279,7 +290,7 @@ def view_request(request, id):
 def clean(request):
     for key in list(request.session.keys()):
         del request.session[key]
-    return redirect('/login/student')
+    return redirect('/')
     
 
 def is_logged_in(request):
@@ -446,7 +457,7 @@ def decide(request, id):
         if decision == 'rejected':
             reason = request.POST.get('reason', '')
             data.reason += '\n'+reason
-            msg = 'request no '+id+' is '+decision+' because, '+reason+', mail has been sent to respective student'
+            msg = 'request no '+id+' is '+decision+' because, '+reason
             messages.error(request, msg)
             body = 'your request for library fee refund has been '+decision+'\n because, '+reason+'\ncontact library for more details'
         data.action_date = datetime.datetime.now()
@@ -455,19 +466,27 @@ def decide(request, id):
         subject = 'noreply@libraryfeerefund.com'
         from_mail = settings.EMAIL_HOST_USER
         to_mail = [student_data.email]
-        send_mail(subject, body, from_mail, to_mail, fail_silently=False)
+        try:
+            msg += ' the mail has been sent to '+student_data.name
+            send_mail(subject, msg, from_mail, to_mail, fail_silently=False)
+        except:
+            msg += ' mail not sent to '+student_data.name+' due to some problem'
+        messages.info(request, msg)
         return redirect('/pending_request')
 
 def deduct(request, id):
     data = transaction.objects.get(id = id)
-    student_data = student.objects.get(enrollment = data.student_enrollment)
+    try:
+        student_data = student.objects.get(enrollment = data.student_enrollment)
+    except:
+        print('student not fount')
     if request.method == 'POST':
         deduct = int(request.POST.get('outstanding', 0))
         reason = request.POST.get('out_reason', "")
         if deduct > 0 and reason != "":
             data.amount -= deduct
             data.save()
-            messages.info(request, 'the charges have been deducted from amount because '+reason+' the mail has been sent to '+student_data.name)
+            msg = 'the charges have been deducted from amount because '+reason
             
             data.reason = reason
             msg = 'amout of Rs.'+str(deduct)+' has been deducted from your library fee refund\nbecause, '+reason+', contact library for more details'
@@ -475,7 +494,12 @@ def deduct(request, id):
             subject = 'noreply@libraryfeerefund.com'
             from_mail = settings.EMAIL_HOST_USER
             to_mail = [student_data.email]
-            send_mail(subject, msg, from_mail, to_mail, fail_silently=False)
+            try:
+                msg += ' the mail has been sent to '+student_data.name
+                send_mail(subject, msg, from_mail, to_mail, fail_silently=False)
+            except:
+                msg += ' mail not sent to '+student_data.name+'due to some problem'
+            messages.info(request, msg)
             return redirect('/view_request/'+id)
     else:
         context = {
@@ -529,22 +553,47 @@ def generate_report(request):
             return redirect('/report')
         
         
-        data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
+        data = transaction.objects.filter(action_date__month= month, action_date__year = year)
+        total = 0
+        approved_total = 0
+        rejected_total = 0
+        pending_total = 0
         if data.exists():
-            total = 0
             for i in data:
                 total += i.amount
-            context = {
-                'data':data,
-                'sum':total,
-                'month':month,
-                'year':year,
-                'count':data.count()
-            }
-            return render(request, 'report.html', context)
         else:
-            
             messages.info(request, 'we don\'t have data of '+moye)
-        return redirect('/report')
+            return redirect('/report')
+        approved_data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
+        if approved_data.exists():
+            for i in approved_data:
+                approved_total += i.amount
+        rejected_data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="rejected")
+        if rejected_data.exists():
+            for i in rejected_data:
+                rejected_total += i.amount
+        pending_data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="pending")
+        if pending_data.exists():
+            for i in pending_data:
+                pending_total += i.amount
+        
+        context = {
+            'data':data,
+            'pending_data':pending_data,
+            'approved_data':approved_data,
+            'rejected_data':rejected_data,
+            'sum':total,
+            'pending_total':pending_total,
+            'rejected_total':rejected_total,
+            'pending_total':pending_total,
+            'month':month,
+            'year':year,
+            'count':data.count(),
+            'pending_count':pending_data.count(),
+            'rejected_count':rejected_data.count(),
+            'approved_count':approved_data.count(),
+        }
+        return render(request, 'report.html', context)
+    
     else:
         return render(request, 'report.html')
