@@ -33,7 +33,7 @@ def all_requests(request):
     context = {}
     context_name = 'data'
     pagi(request, data, context_name, context)
-    return render(request, "all_requests.html", context)
+    return render(request, "librarian/all_requests.html", context)
 
 # @login_required
 def edit_emp(request, id):
@@ -280,12 +280,12 @@ def pending_request(request):
     pendings = transaction.objects.filter(status = 'pending')
     if not pendings.exists():
         pendings = None
-    return render(request, "pending_request.html", {'pending_data':pendings})
+    return render(request, "librarian/pending_request.html", {'pending_data':pendings})
 
 def view_request(request, id):
     request_data = transaction.objects.get(id = id)
     student_data = student.objects.get(enrollment = request_data.student_enrollment)
-    return render(request, 'view_request.html', {'data':request_data, 'student':student_data})
+    return render(request, 'librarian/view_request.html', {'data':request_data, 'student':student_data})
 
 def clean(request):
     for key in list(request.session.keys()):
@@ -439,7 +439,7 @@ def image_view(request, id):
         string = data.last_sem_fee_image.url
     if typ == 'grade':
         string = data.grade_history_image.url
-    return render(request, 'image_view.html', {'source':string})
+    return render(request, 'librarian/image_view.html', {'source':string})
 
 def decide(request, id):
     id,decision = id.split()
@@ -447,7 +447,7 @@ def decide(request, id):
     student_data = student.objects.get(enrollment = data.student_enrollment)
         
     if decision == 'request':
-        return render(request, 'view_request.html', {'data':data, 'student':student_data, 'reason':True})
+        return render(request, 'librarian/view_request.html', {'data':data, 'student':student_data, 'reason':True})
     else:
         data.status = decision
         if decision == 'approved':
@@ -507,7 +507,7 @@ def deduct(request, id):
             'student':student_data,
             'deduct':request.GET.get('outstanding')
         }
-        return render(request, 'view_request.html', context)
+        return render(request, 'librarian/view_request.html', context)
 
 def pagi(request, data, context_name, context):
     pagination = Paginator(data, 5)
@@ -538,11 +538,13 @@ def pagi(request, data, context_name, context):
 def generate_report(request):
     if request.method == 'POST':
         moye = request.POST.get('moye')
-        month = int(moye.split("/")[0])
-        year = int(moye.split("/")[1])
+        
         if not re.match(r'\d{1,2}/\d{4}', moye):
             messages.error(request, 'invalid input : '+moye)
             return redirect('/report')
+        
+        month = int(moye.split("/")[0])
+        year = int(moye.split("/")[1])
         
         if month > 12 or month < 1:
             messages.error(request, "invalid month {}".format(month))
@@ -553,47 +555,23 @@ def generate_report(request):
             return redirect('/report')
         
         
-        data = transaction.objects.filter(action_date__month= month, action_date__year = year)
+        data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
         total = 0
-        approved_total = 0
-        rejected_total = 0
-        pending_total = 0
         if data.exists():
             for i in data:
                 total += i.amount
         else:
             messages.info(request, 'we don\'t have data of '+moye)
             return redirect('/report')
-        approved_data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
-        if approved_data.exists():
-            for i in approved_data:
-                approved_total += i.amount
-        rejected_data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="rejected")
-        if rejected_data.exists():
-            for i in rejected_data:
-                rejected_total += i.amount
-        pending_data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="pending")
-        if pending_data.exists():
-            for i in pending_data:
-                pending_total += i.amount
         
         context = {
             'data':data,
-            'pending_data':pending_data,
-            'approved_data':approved_data,
-            'rejected_data':rejected_data,
             'sum':total,
-            'pending_total':pending_total,
-            'rejected_total':rejected_total,
-            'pending_total':pending_total,
             'month':month,
             'year':year,
             'count':data.count(),
-            'pending_count':pending_data.count(),
-            'rejected_count':rejected_data.count(),
-            'approved_count':approved_data.count(),
         }
-        return render(request, 'report.html', context)
+        return render(request, 'librarian/report.html', context)
     
     else:
-        return render(request, 'report.html')
+        return render(request, 'librarian/report.html')

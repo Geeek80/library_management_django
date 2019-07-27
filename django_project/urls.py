@@ -24,27 +24,35 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', login),
+    
+    # student
     path('home', homepage),
-    path('lib_home', lib_homepage),
-    path('add', add_emp),
-    path('all_requests/', all_requests),
-    path('edit/<int:id>', edit_emp),
-    path('update/<int:identity>', update_emp),
-    path('delete/<int:identity>', delete_emp),
-    path('login/<str:desig>', user_login),
     path('my_request/', my_request),
     path('request/', requestt),
-    path('logout/<str:desig>', logout),
-    path('otplogin/<str:desig>', otp_login),
+    
+    # librarian
+    path('lib_home', lib_homepage),
+    path('all_requests/', all_requests),
     path('pending_request', pending_request),
     path('view_request/<int:id>', view_request),
-    path('change_password/<str:desig>', change_pass),
-    path('set_pass/<str:desig>', set_pass),
-    path('getotp/<str:desig>', get_otp),
     path('image_view/<str:id>', image_view),
     path('decide/<str:id>', decide),
     path('deduct/<str:id>', deduct),
     path('report', generate_report),
+
+    # for both
+    path('', login),
+    path('login/<str:desig>', user_login),
+    path('logout/<str:desig>', logout),
+    path('otplogin/<str:desig>', otp_login),
+    path('change_password/<str:desig>', change_pass),
+    path('set_pass/<str:desig>', set_pass),
+    path('getotp/<str:desig>', get_otp),
+
+    # others
     path('clean', clean),
+    path('delete/<int:identity>', delete_emp),
+    path('edit/<int:id>', edit_emp),
+    path('update/<int:identity>', update_emp),
+    path('add', add_emp),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,14 +1,8 @@
-{% extends 'index.html' %}
+{% extends 'librarian/index.html' %}
 {% block title %} - Reports{% endblock %}
 {% block content %}
 
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li {% if 'error' in message.tags %} style="color:red"{% else %}class="text-info"{% endif %}><b>{{ message }}</b></li>
-    {% endfor %}
-</ul>
-{% endif %}
+
 
 {% if not data %}
 <div class="jumbotron vertical-center">
@@ -66,5 +60,12 @@
                 </tbody>
               </table>
     </div>
+{% endif %}
+{% if messages %}
+<ul class="messages text-center">
+    {% for message in messages %}
+    <li {% if 'error' in message.tags %} style="color:red"{% else %}class="text-info"{% endif %}><b>{{ message }}</b></li>
+    {% endfor %}
+</ul>
 {% endif %}
 {% endblock %}

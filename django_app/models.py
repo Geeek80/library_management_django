@@ -17,6 +17,7 @@ class student(models.Model):
     enrollment = models.CharField(max_length=15)
     password = models.CharField(max_length=21, null=True, blank=True)
     phone_no = models.CharField(max_length=13, null=True)
+    parents_phone_no = models.CharField(max_length=13)
     resi_address = models.CharField(max_length=150)
     semester = models.IntegerField()
     division = models.CharField(max_length=5)
@@ -38,10 +39,11 @@ class transaction(models.Model):
     receipt_no = models.IntegerField(null=True, blank=True)
     receipt_date = models.DateField(blank=True, null=True)
     amount = models.IntegerField()
+    application_no = models.CharField(max_length=15, unique=True)
     student_enrollment= models.CharField(max_length=15, unique=True)
     status = models.CharField(max_length=15, blank=True)
     reason = models.CharField(max_length=256, null=True)
-    action_date = models.DateTimeField(blank = True)
+    action_date = models.DateTimeField(blank = True, null=True)
     fee_receipt_image = models.FileField(upload_to="images/", blank=True)
     cancelled_cheque_image = models.FileField(upload_to="images/")
     passbook_image = models.FileField(upload_to="images/")
@@ -49,5 +51,5 @@ class transaction(models.Model):
     grade_history_image = models.FileField(upload_to="images/")
     
     class Meta:
-        db_table = "transation"
+        db_table = "transaction"
     
