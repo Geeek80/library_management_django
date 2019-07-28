@@ -1,4 +1,8 @@
 /django_project/email.py 
+media
+
+#macOs
+.DS_Store
 
 # Visual Studio Code # 
 .vscode/* 
