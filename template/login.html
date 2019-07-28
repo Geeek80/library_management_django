@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Bahianita&display=swap" rel="stylesheet">
+    <style>
+        .captcha{
+            letter-spacing: 3px;
+            margin: 2%;
+            font-style: italic;
+            font-family: Bahianita;
+            font-size: 25px;
+        }
+    </style>
+    <title>Library Fee Refund System {% block title %}- Student Login{% endblock %}</title>
+</head>
+<body>
+        
+        <div class="container-fluid vertical-center-row">
+                <div class="container">
+                    <h2 class="text-center display-3">Library Fee Refund System</h2>
+                     <hr>
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <!-------null------>
+                        </div>
+                        {% block content %}
+                        <div class="col-md-5">
+                                <a href="/login/student"><button type="button" class="btn btn-info">Student Login</button></a>
+                                <a href="/login/librarian"><button type="button" class="btn btn-outline-info ml-4">Librarian Login</button></a>
+                                  <form method="POST" action="
+                                  {% if enr_only_action %}
+                                  {{ enr_only_action }}
+                                  {% else %}
+                                  /login/student
+                                  {% endif %}"
+                                  >
+                                    {% csrf_token %}
+                                <fieldset>							
+                                    	
+                                        <div class="form-group">
+                                            <label 
+                                            {% if error_usr %}
+                                                style="color:red;"                                                 
+                                            {% endif %}
+                                            class="col-form-label" for="inputDefault">Enrollment No.:</label>
+                                            {{ form.enrollment }}
+                                            <div style="color:red;">{{ error_data }}</div>
+
+                                            {% if not enr_only_action %}
+                                                <label
+                                                {% if error_pas %}
+                                                    style="color:red;" 
+                                                {% endif %}
+                                                class="col-form-label" for="inputDefault">Password:</label>
+                                                    {{ form.password }}
+                                                    <div style="color:red;">{{ error_pass }}</div>
+                                            {% endif %}
+                                        </div>
+                                        {% if not enr_only_action %}
+                                        <div class="form-group">
+                                        <label
+                                                {% if error_captcha %}
+                                                    style="color:red;" 
+                                                {% endif %}
+                                                class="col-form-label" for="inputDefault">Captcha : </label> <span class='captcha'><s>{{ captcha }}</span></s>  
+                                                    <input type="text" name="captcha" required>
+                                                    <div style="color:red;">{{ error_captcha }}</div>
+                                        </div>
+                                        {% endif %}
+
+                                    <div>
+                                        <input type="submit" class="btn btn-primary" value=
+                                        {% if enr_only_action %}
+                                        "Get OTP"
+                                        {% else %}
+                                        "Sign In"
+                                        {% endif %}
+                                        >
+                                        {% if messages %}
+                                        <ul class="messages">
+                                            {% for message in messages %}
+                                            <li class="text-info"><b>{{ message }}</b></li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% endif %}
+                                    </div>
+                                         
+                                 </fieldset>
+                        </form>	
+                        {% if not enr_only_action %}
+                            <div class="row mt-3">
+                                <div class="col">
+                                <form method="GET" action="/otplogin/student">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-primary">Login Using OTP?</button>
+                                </form>
+                                </div>
+                            </div>
+                        {% endif %}
+                        </div>
+                        {% endblock %}
+                    </div>
+                </div>
+                <p class="text-center">
+                    <small id="passwordHelpInline" class="text-muted"> Developers:<a href="mailto:aakashtolani80@gmail.com"> Aakash Tolani</a>, <a href="mailto:"> Het Rachh</a> and <a href="mailto:hasijasankalp@gmail.com"> Sankalp Hasija</a>. MCA students @2019</small>
+                </p>
+            </div>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</body>
+</html>

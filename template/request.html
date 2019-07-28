@@ -1,0 +1,105 @@
+{% extends 'index.html' %}
+
+
+{% block content %}
+    <div class="container-fluid mt-4">
+        <div class="container align-items-center">
+            <h2 class="text-center">Library Fee Due Form</h2>
+                <div class="col-md-12">
+                <fieldset>
+                    <form action="/request/" enctype="multipart/form-data" method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                        <label class="control-label" for="application_no">Receipt No.:</label>
+                                        {{ form.receipt_no }}
+                                        <div style="color:red;"> if you don't have fee receipt fine of 100 rs. will be charged. </div>
+                                </div>    
+                            </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="name">Receipt Date:</label>
+                                    {{ form.receipt_date }}
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="name">Amount Due:</label>
+                                    {{ form.amount }}
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="name">Enrollment No.:</label>
+                                    {{ form.student_enrollment}}
+                                </div>
+                            </div>
+                    </div>
+                    <div class="row">
+
+                            <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="name">Grade history Image:</label>
+                                        {{ form.grade_history_image }}
+                                        <div style="color:#3498DB;"> refer gtu site for student grade history </div>
+                                    </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="name">Last Sem Fee Receipt Image:</label>
+                                    {{ form.last_sem_fee_image }}
+                                    <div style="color:red;"> if receipt is missing fine of 100 rs. will be charged. </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="name">Library Fee Receipt Image:</label>
+                                    {{ form.fee_receipt_image }}
+                                    <div style="color:red;"> if you don't have library fee receipt fine of 100 rs. will be charged. </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="name">Cancelled cheque Image:</label>
+                                    {{ form.cancelled_cheque_image }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="name">Passbook Front Page Image:</label>
+                                    {{ form.passbook_image }}
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <button class="btn btn-outline-primary" type="submit" >Submit Request >></button>
+                                </div>
+                            </div>
+                            <div class="col">
+                                    {% if messages %}
+                                    <ul class="messages" style="color:red;">
+                                        {% for message in messages %}
+                                        <li class="text-info"><b>{{ message }}</b></li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                </fieldset>
+                </div>
+        </div>
+    </div>
+{% endblock %}
