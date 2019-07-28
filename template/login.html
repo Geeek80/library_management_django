@@ -86,7 +86,13 @@
                                         {% if messages %}
                                         <ul class="messages">
                                             {% for message in messages %}
-                                            <li class="text-info"><b>{{ message }}</b></li>
+                                                <li
+                                                {% if 'error' in message.tags %}
+                                                    style="color:red;"
+                                                {% else %}
+                                                    class="text-info"
+                                                {% endif %}
+                                                ><b>{{ message }}</b></li>
                                             {% endfor %}
                                         </ul>
                                         {% endif %}

@@ -40,7 +40,7 @@ class transaction(models.Model):
     receipt_no = models.IntegerField(null=True, blank=True)
     receipt_date = models.DateField(blank=True, null=True)
     amount = models.IntegerField()
-    application_no = models.CharField(max_length=15, unique=True)
+    application_no = models.CharField(max_length=15)
     student_enrollment= models.CharField(max_length=15, unique=True)
     status = models.CharField(max_length=15, blank=True)
     reason = models.CharField(max_length=256, null=True)

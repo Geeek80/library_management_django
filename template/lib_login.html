@@ -1,6 +1,7 @@
 {% extends 'login.html' %}
 {% block title %}- Librarian Login{% endblock %}
 {% block content %}
+
 <div class="col-md-5">
         <a href="/login/student"><button type="button" class="btn btn-outline-info">Student Login</button></a>
         <a href="/login/librarian"><button type="button" class="btn btn-info ml-4">Librarian Login</button></a>
@@ -56,7 +57,13 @@
                 {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}
-                    <li class="text-info"><b>{{ message }}</b></li>
+                        <li
+                        {% if 'error' in message.tags %}
+                            style="color:red;"
+                        {% else %}
+                            class="text-info"
+                        {% endif %}
+                        ><b>{{ message }}</b></li>
                     {% endfor %}
                 </ul>
                 {% endif %}

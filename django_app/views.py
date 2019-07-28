@@ -11,7 +11,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 # Create your views here.
-# @login_required
+
 def add_emp(request):
     if request.method == "POST":  # if submit clicked
         form = employeeform(request.POST)
@@ -27,20 +27,21 @@ def add_emp(request):
         form = employeeform()
     return render(request, "add_emp.html", {'form':form})
 
-# @login_required
 def all_requests(request):
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
     data = transaction.objects.all()
     context = {}
     context_name = 'data'
     pagi(request, data, context_name, context)
     return render(request, "librarian/all_requests.html", context)
 
-# @login_required
+
 def edit_emp(request, id):
     employee = student.objects.get(id=id)
     return render(request, 'edit_form.html', {'emp':employee})
 
-# @login_required
+
 def update_emp(request, identity):
     emp = mymodel.objects.get(id=identity)
     form = employeeform(request.POST, instance=emp)
@@ -51,7 +52,7 @@ def update_emp(request, identity):
         print(form.errors)
     return render(request, 'edit_form.html', {'emp':emp, 'form':form})
 
-# @login_required
+
 def delete_emp(request, identity):
     employee = student.objects.get(id=identity)
     employee.delete()
@@ -69,24 +70,17 @@ def user_login(request, desig=None):
         model = student
         pageload = 'login.html'
         success_page = "/home"
-        if 'name' in request.session:
-            return redirect(success_page)
     
     if desig == 'librarian':
-        if 'lib_name' in request.session:
-            return redirect('/lib_home')
         session_var_name = 'lib_name'
         frm = libloginform(request.POST)
         usrnm = 'username'
         model = librarian
         pageload = 'lib_login.html'
         success_page = "/lib_home"
-        if 'lib_name' in request.session:
-            user = student.objects.get(name=request.session['name'])
-            if user.password=='' or user.password == None:
-                return redirect('/set_pass/'+desig)
-            else:
-                return render(request, "librarian/index.html", {'user':user})
+
+    if is_logged_in(request, desig, False):
+        return redirect(success_page)
 
     if request.method == "POST":  # if submit clicked
         form = frm
@@ -172,7 +166,8 @@ def user_login(request, desig=None):
     return render(request, pageload, {'form':form, 'captcha':capt})
 
 def my_request(request):
-    is_logged_in(request)
+    if not is_logged_in(request, "student"):
+        return redirect("/login/student")
     trans = None
     if 'enrollment' in request.session:
         try:
@@ -182,6 +177,8 @@ def my_request(request):
     return render(request, 'my_request.html', {'transaction_data':trans})
 
 def requestt(request):
+    if not is_logged_in(request, "student"):
+        return redirect("/login/student")
     form = fee_request_form(initial={'student_enrollment':request.session['enrollment']})
     if request.method == 'POST':
         form = fee_request_form(request.POST, request.FILES, initial={'student_enrollment':request.session['enrollment']})
@@ -224,7 +221,7 @@ def logout(request, desig):
         if 'lib_name' and 'lib_username' in request.session:
             del request.session['lib_name']
             del request.session['lib_username']
-    return redirect('/login/'+desig)
+    return redirect('/')
 
 
 def otp_login(request, desig):
@@ -238,7 +235,7 @@ def otp_login(request, desig):
         action = '/otplogin/'+desig
         action_name = 'enr_only_action'
     
-    if desig == 'librarian':
+    elif desig == 'librarian':
         frm = libloginform()
         usrnm = 'username'
         pageload = 'lib_login.html'
@@ -257,7 +254,7 @@ def otp_login(request, desig):
             username = request.POST.get(usrnm)
             if desig == 'student':
                 insan = model.objects.get(enrollment=username)
-            if desig == 'librarian':
+            elif desig == 'librarian':
                 insan = model.objects.get(username=username)
         except:
             data = "sorry that "+usrnm+" didn't work"
@@ -282,12 +279,16 @@ def otp_login(request, desig):
 
 
 def pending_request(request):
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
     pendings = transaction.objects.filter(status = 'pending')
     if not pendings.exists():
         pendings = None
     return render(request, "librarian/pending_request.html", {'pending_data':pendings})
 
 def view_request(request, id):
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
     request_data = transaction.objects.get(id = id)
     student_data = student.objects.get(enrollment = request_data.student_enrollment)
     return render(request, 'librarian/view_request.html', {'data':request_data, 'student':student_data})
@@ -298,12 +299,22 @@ def clean(request):
     return redirect('/')
     
 
-def is_logged_in(request):
-    if 'name' in request.session:
-        return True
+def is_logged_in(request, desig, disp_msg=True):
+    if desig == "student":
+        if 'name' and 'enrollment' in request.session:
+            return True
+
+    if desig == "librarian":
+        if 'lib_name' and 'lib_username' in request.session:
+            return True
+    msg = 'please login to continue...' if disp_msg else ""
+    messages.error(request, msg)
     return False
 
 def change_pass(request, desig):
+    if not is_logged_in(request, desig):
+            return redirect("/login/"+desig)
+
     if desig == 'student':
         username = request.session['enrollment']
         pageload = "change_password.html"
@@ -365,6 +376,8 @@ def change_pass(request, desig):
         return redirect(redir)
 
 def get_otp(request, desig):
+    if not is_logged_in(request, desig):
+            return redirect("/login/"+desig)
     if desig == 'student':
         username = request.session['enrollment']
         try:
@@ -399,6 +412,8 @@ def get_otp(request, desig):
     return redirect('/change_password/'+desig)
 
 def set_pass(request, desig):
+    if not is_logged_in(request, desig):
+            return redirect("/login/"+desig)
     if request.method == 'GET':
         return render(request, 'set_pass.html', {'desig':desig})
     
@@ -440,6 +455,8 @@ def set_pass(request, desig):
     return redirect(redir)
 
 def image_view(request, id):
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
     id,typ = id.split()
     data = transaction.objects.get(id=id)
     if typ == 'cheque':
@@ -455,6 +472,8 @@ def image_view(request, id):
     return render(request, 'librarian/image_view.html', {'source':string})
 
 def decide(request, id):
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
     id,decision = id.split()
     data = transaction.objects.get(id = id)
     student_data = student.objects.get(enrollment = data.student_enrollment)
@@ -488,6 +507,8 @@ def decide(request, id):
         return redirect('/pending_request')
 
 def deduct(request, id):
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
     data = transaction.objects.get(id = id)
     try:
         student_data = student.objects.get(enrollment = data.student_enrollment)
@@ -549,6 +570,8 @@ def pagi(request, data, context_name, context):
     )
 
 def generate_report(request):
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
     if request.method == 'POST':
         moye = request.POST.get('moye')
         

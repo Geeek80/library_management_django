@@ -1,27 +1,26 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django_app.models import student, librarian
-from django_app.views import set_pass
+from django_app.views import set_pass, is_logged_in
 
 def homepage(request):
-    if 'name' in request.session:
-        user = student.objects.get(name = request.session['name'])
-        desig = 'student'
-        if user.password=='' or user.password == None:
-            return redirect('/set_pass/'+desig)
-        else:
-            return render(request, "index.html", {'user':user})
+    if not is_logged_in(request, "student"):
+        return redirect("/login/student")
     else:
-        return redirect('/login/student')
+        model = student
+        user = model.objects.get(enrollment=request.session['enrollment'])
+        if user.password=='' or user.password == None:
+            return redirect('/set_pass/student')
+        return render(request, "index.html", {'user':user})
 
         
 def lib_homepage(request):
-    if 'lib_name' in request.session:
-        user = librarian.objects.get(name = request.session['lib_name'])
-        desig = 'librarian'
-        if user.password=='' or user.password == None:
-            return redirect('/set_pass/'+desig)
-        else:
-            return render(request, "librarian/index.html", {'user':user})
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
     else:
-        return redirect('/login/librarian')
+        modle = librarian
+        user = model.objects.get(username=request.session['lib_username'])
+        if user.password=='' or user.password == None:
+            return redirect('/set_pass/librarian')
+        return render(request, "librarian/index.html", {'user':user})
+        
