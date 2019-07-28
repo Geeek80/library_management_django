@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <center>
+        <form method="POST" action="add" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- {{form |linebreaks}} truncatewords:20-->
+            <div style="color:red; font-size:16px; display: inline-block;">{{ form.errors.eid }}</div><br>
+            employee id : {{form.eid}}<br>
+            employee name : {{form.ename}}<br>
+            employee email : {{form.email}}<br>
+            employee image : {{form.image}}<br>
+            <input type="submit">
+        </form>
+    </center>
+</body>
+</html>
