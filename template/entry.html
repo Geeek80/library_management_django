@@ -16,13 +16,16 @@
             font-family: Bahianita;
             font-size: 25px;
         }
+        body,html {
+            height: 100%;
+        }
     </style>
-    <title>Library Fee Refund System {% block title %}- Student Login{% endblock %}</title>
+    <title>Library Fee Refund System {% block title %}- Welcome{% endblock %}</title>
 </head>
 <body>
-        
-        <div class="container-fluid vertical-center-row mt-5">
-                <div class="container ">
+        <div class="row h-100 align-items-center">
+        <div class="container-fluid col-sm-12 align-self-center">
+                <div class="container col-sm-12 card card-block">
                     <h2 class="text-center display-3">Library Fee Refund System</h2>
                      <hr>
                     <div class="row">
@@ -38,10 +41,14 @@
                         {% endblock %}
                     </div>
                 </div>
-                <p class="text-center">
-                    <small id="passwordHelpInline" class="text-muted"> Developers:<a href="mailto:aakashtolani80@gmail.com"> Aakash Tolani</a>, <a href="mailto:"> Het Rachh</a> and <a href="mailto:hasijasankalp@gmail.com"> Sankalp Hasija</a>. MCA students @2019</small>
-                </p>
-            </div>
+                
+        </div>
+    </div>
+            <footer>
+            <p class="text-center">
+                <small id="passwordHelpInline" class="text-muted"> Developers:<a href="mailto:aakashtolani80@gmail.com"> Aakash Tolani</a>, <a href="mailto:"> Het Rachh</a> and <a href="mailto:hasijasankalp@gmail.com"> Sankalp Hasija</a>. MCA students @2019</small>
+            </p>
+            </footer>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 </body>

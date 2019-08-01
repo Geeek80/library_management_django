@@ -8,7 +8,7 @@ def homepage(request):
         return redirect("/login/student")
     else:
         model = student
-        user = model.objects.get(enrollment=request.session['enrollment'])
+        user = student.objects.get(enrollment=request.session['enrollment'])
         if user.password=='' or user.password == None:
             return redirect('/set_pass/student')
         return render(request, "index.html", {'user':user})
@@ -19,7 +19,7 @@ def lib_homepage(request):
         return redirect("/login/librarian")
     else:
         modle = librarian
-        user = model.objects.get(username=request.session['lib_username'])
+        user = librarian.objects.get(username=request.session['lib_username'])
         if user.password=='' or user.password == None:
             return redirect('/set_pass/librarian')
         return render(request, "librarian/index.html", {'user':user})

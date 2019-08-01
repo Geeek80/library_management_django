@@ -1,7 +1,7 @@
 /django_project/email.py 
 media
 
-#macOs
+# macOs
 .DS_Store
 
 # Visual Studio Code # 

@@ -13,7 +13,7 @@ class mymodel(models.Model):
         ordering = [ '-ename' ] # sorting enames by descending order wherever they're displayed
 
 class student(models.Model):
-    course = models.CharField(max_length=10)
+    stream = models.CharField(max_length=5)
     name = models.CharField(max_length=20)
     enrollment = models.CharField(max_length=15)
     password = models.CharField(max_length=21, null=True, blank=True)
@@ -43,7 +43,7 @@ class transaction(models.Model):
     application_no = models.CharField(max_length=15)
     student_enrollment= models.CharField(max_length=15, unique=True)
     status = models.CharField(max_length=15, blank=True)
-    reason = models.CharField(max_length=256, null=True)
+    reason = models.CharField(max_length=256, null=True, blank=True)
     action_date = models.DateTimeField(blank = True, null=True)
     fee_receipt_image = models.FileField(upload_to="images/", blank=True)
     cancelled_cheque_image = models.FileField(upload_to="images/")
@@ -53,4 +53,10 @@ class transaction(models.Model):
     
     class Meta:
         db_table = "transaction"
+
+class counts(models.Model):
+    ica_counts = models.IntegerField()
+    iet_counts = models.IntegerField()
+    class Meta:
+        db_table = "counts"
     

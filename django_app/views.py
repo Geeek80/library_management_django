@@ -1,7 +1,7 @@
 import re, random, datetime
 from django.shortcuts import render, redirect
 from django_app.forms import employeeform, loginform, fee_request_form, libloginform
-from django_app.models import mymodel, student, transaction, librarian
+from django_app.models import mymodel, student, transaction, librarian, counts
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -179,6 +179,7 @@ def my_request(request):
 def requestt(request):
     if not is_logged_in(request, "student"):
         return redirect("/login/student")
+
     form = fee_request_form(initial={'student_enrollment':request.session['enrollment']})
     if request.method == 'POST':
         form = fee_request_form(request.POST, request.FILES, initial={'student_enrollment':request.session['enrollment']})
@@ -204,7 +205,17 @@ def requestt(request):
                 newform.amount -= 100
             if 'last_sem_fee_image' not in request.FILES:
                 newform.amount -= 100
-            
+
+            stream = stud.stream
+            count_obj = counts.objects.get(id=1)
+            if stream == "ica":
+                newform.application_no = stream+'_{}'.format(count_obj.ica_counts)
+                count_obj.ica_counts += 1
+            elif stream == "iet":
+                newform.application_no = stream+'_{}'.format(count_obj.iet_counts)
+                count_obj.iet_counts += 1
+            count_obj.save()
+
             newform.save()
             messages.info(request, 'Your Request has been Submitted Successfully')
             return redirect("/my_request")
@@ -593,19 +604,25 @@ def generate_report(request):
         
         data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
         total = 0
+        names = []
+        temp = 0
         if data.exists():
             for i in data:
                 total += i.amount
+                stud = student.objects.get(enrollment = i.student_enrollment)
+                names.append(stud.name)
+                temp+=1
         else:
             messages.info(request, 'we don\'t have data of '+moye)
             return redirect('/report')
-        
+        rang = range(data.count())
         context = {
             'data':data,
+            'range':rang,
             'sum':total,
             'month':month,
             'year':year,
-            'count':data.count(),
+            'names':names,
         }
         return render(request, 'librarian/report.html', context)
     

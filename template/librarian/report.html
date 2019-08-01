@@ -1,7 +1,7 @@
 {% extends 'librarian/index.html' %}
 {% block title %} - Reports{% endblock %}
 {% block content %}
-
+{% load custom_index %}
 
 
 {% if not data %}
@@ -34,16 +34,16 @@
                     
                   <tr>
                     <th scope="row">Total Records</th>
-                    <td><b>{{ count }}</b></td>
+                    <td><b>{{ data.count }}</b></td>
                     <th scope="row">Total Amount</th>
                     <td><b>{{ sum }}</b></td>
                   </tr>
                   <tr>
                     <th>Application No.</th>
                     <th>Receipt No.</th>
-                    <th>Date Requested</th>
-                    <th>Date Approved</th>
                     <th>Enrollment</th>
+                    <th>Name</th>
+                    <th>Date Approved</th>
                     <th>Amount</th>
                 </tr>
                   {% for row in data %}
@@ -51,11 +51,12 @@
                     
                     <td>{{ row.id }}</td>
                     <td>{{ row.receipt_no }}</td>
-                    <td>{{ row.date }}</td>
-                    <td>{{ row.action_date }}</td>
                     <td>{{ row.student_enrollment }}</td>
+                    <td>{{names | index:forloop.counter0}}</td>
+                    <td>{{ row.action_date }}</td>
                     <td>{{ row.amount }}</td>
                   </tr>
+                  
                   {% endfor %}
                 </tbody>
               </table>
