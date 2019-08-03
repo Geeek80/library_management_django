@@ -43,6 +43,7 @@ class transaction(models.Model):
     application_no = models.CharField(max_length=15)
     student_enrollment= models.CharField(max_length=15, unique=True)
     status = models.CharField(max_length=15, blank=True)
+    additional_information = models.CharField(max_length=150, blank=True, null=True)
     reason = models.CharField(max_length=256, null=True, blank=True)
     action_date = models.DateTimeField(blank = True, null=True)
     fee_receipt_image = models.FileField(upload_to="images/", blank=True)

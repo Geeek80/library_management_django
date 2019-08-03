@@ -76,7 +76,7 @@ def user_login(request, desig=None):
         frm = libloginform(request.POST)
         usrnm = 'username'
         model = librarian
-        pageload = 'lib_login.html'
+        pageload = 'librarian/lib_login.html'
         success_page = "/lib_home"
 
     if is_logged_in(request, desig, False):
@@ -188,7 +188,6 @@ def requestt(request):
         
         if form.is_valid():
             newform = form.save(commit=False)
-            # newform.application_no = 1
             newform.status = "pending"
 
             if newform.amount > 3000:
@@ -249,7 +248,7 @@ def otp_login(request, desig):
     elif desig == 'librarian':
         frm = libloginform()
         usrnm = 'username'
-        pageload = 'lib_login.html'
+        pageload = 'librarian/lib_login.html'
         model = librarian
         with_ini = libloginform(initial={usrnm:request.POST.get(usrnm)})
         redir = '/login/'+desig
@@ -472,13 +471,13 @@ def image_view(request, id):
     data = transaction.objects.get(id=id)
     if typ == 'cheque':
         string = data.cancelled_cheque_image.url
-    if typ == 'fee_receipt':
+    elif typ == 'fee_receipt':
         string = data.fee_receipt_image.url
-    if typ == 'passbook':
+    elif typ == 'passbook':
         string = data.passbook_image.url
-    if typ == 'last_sem':
+    elif typ == 'last_sem':
         string = data.last_sem_fee_image.url
-    if typ == 'grade':
+    elif typ == 'grade':
         string = data.grade_history_image.url
     return render(request, 'librarian/image_view.html', {'source':string})
 
@@ -494,10 +493,10 @@ def decide(request, id):
     else:
         data.status = decision
         if decision == 'approved':
-            msg = 'request no '+id+' Documents verified, request '+decision+' and the mail has been sent to respective student'
+            msg = 'request no '+id+' Documents verified, request '+decision
             messages.info(request, msg)
             body = 'your request for library fee refund has been '+decision+'\nAmount of Rs.'+str(data.amount)+' will be transfered to your account soon\ncontact library for more details'
-        if decision == 'rejected':
+        elif decision == 'rejected':
             reason = request.POST.get('reason', '')
             data.reason += '\n'+reason
             msg = 'request no '+id+' is '+decision+' because, '+reason
@@ -510,8 +509,8 @@ def decide(request, id):
         from_mail = settings.EMAIL_HOST_USER
         to_mail = [student_data.email]
         try:
-            msg += ' the mail has been sent to '+student_data.name
             send_mail(subject, msg, from_mail, to_mail, fail_silently=False)
+            msg += ' the mail has been sent to '+student_data.name
         except:
             msg += ' mail not sent to '+student_data.name+' due to some problem'
         messages.info(request, msg)
@@ -540,8 +539,8 @@ def deduct(request, id):
             from_mail = settings.EMAIL_HOST_USER
             to_mail = [student_data.email]
             try:
-                msg += ' the mail has been sent to '+student_data.name
                 send_mail(subject, msg, from_mail, to_mail, fail_silently=False)
+                msg += ' the mail has been sent to '+student_data.name
             except:
                 msg += ' mail not sent to '+student_data.name+'due to some problem'
             messages.info(request, msg)

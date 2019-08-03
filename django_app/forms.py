@@ -37,14 +37,10 @@ class libloginform(forms.ModelForm):
         }
 
 class fee_request_form(forms.ModelForm):
-    # receipt_date = forms.DateField(
-    #     widget=forms.DateInput(format=('%d-%m-%Y'), 
-    #                            attrs={'class':'form-control', 
-    #                            'placeholder':'Select a date'}))
     class Meta:
         model = transaction
         fields = [
-            'status',
+            'additional_information',
             'receipt_no',
             'receipt_date',
             'amount',
@@ -56,7 +52,7 @@ class fee_request_form(forms.ModelForm):
             'grade_history_image',
         ]
         widgets = {
-            # 'application_no' : forms.TextInput(attrs= {'class': 'form-control', 'readonly':'readonly'})
+            'additional_information' : forms.TextInput(attrs= {'class': 'form-control', 'placeholder':'e.g. addmission cancelled'}),
             'receipt_no' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Receipt No."}),
             'receipt_date' : forms.DateInput(attrs = {"class":"form-control", "placeholder": "mm/dd/yyyy"}, format=("%m/%d/%Y") ),
             'amount' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Library Fee Amount"}),
