@@ -210,9 +210,9 @@ def requestt(request):
             if stream == "ica":
                 newform.application_no = stream+'_{}'.format(count_obj.ica_counts)
                 count_obj.ica_counts += 1
-            elif stream == "iet":
-                newform.application_no = stream+'_{}'.format(count_obj.iet_counts)
-                count_obj.iet_counts += 1
+            elif stream == "mca":
+                newform.application_no = stream+'_{}'.format(count_obj.mca_counts)
+                count_obj.mca_counts += 1
             count_obj.save()
 
             newform.save()
@@ -602,26 +602,29 @@ def generate_report(request):
         
         
         data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
-        total = 0
-        names = []
-        temp = 0
+        total, temp = 0, 0
+        names, years, rollno, divisions = [],[],[],[]
         if data.exists():
             for i in data:
                 total += i.amount
                 stud = student.objects.get(enrollment = i.student_enrollment)
-                names.append(stud.name)
+                names.insert(temp, stud.name)
+                years.insert(temp, stud.batch_year)
+                rollno.insert(temp, stud.rollno)
+                divisions.insert(temp, stud.division)
                 temp+=1
         else:
             messages.info(request, 'we don\'t have data of '+moye)
             return redirect('/report')
-        rang = range(data.count())
         context = {
             'data':data,
-            'range':rang,
             'sum':total,
             'month':month,
             'year':year,
             'names':names,
+            'years':years,
+            'rollno':rollno,
+            'divisions':divisions,
         }
         return render(request, 'librarian/report.html', context)
     

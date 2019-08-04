@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container-fluid mt-4 mt-5">
         <div class="container align-items-center">
-            <h2 class="text-center mb-3">Library Fee Due Form</h2>
+            <h2 class="text-center mb-3">Application For Refund of Library Deposit</h2>
                 <div class="col-md-12 h-75">
                 <fieldset>
                     <form action="/request/" enctype="multipart/form-data" method="POST">
@@ -11,8 +11,8 @@
                         <div class="row">
                             <div class="col">
                                 <div class="form-group">
-                                        <label class="control-label" for="application_no">Receipt No.:</label>
-                                        {{ form.receipt_no }}
+                                    <label class="control-label" for="application_no">Receipt No.:</label>
+                                    {{ form.receipt_no }}
                                 </div>    
                             </div>
 
@@ -109,7 +109,7 @@
                 <div style="color:red;text-transform: capitalize;">
                     <ul>
                         <li>
-                            <span style="color:black;">fields marked with <span style="color:red;font-size: 21px;">*</span> are compulsory fields </span>        
+                            <span style="color:black;">fields marked with <span style="color:red;font-size: 21px;">*</span> are compulsory </span>        
                         </li>
                         <li>
                             <span style="color:black;">for student grade history refer GTU site.            

@@ -20,6 +20,7 @@ class student(models.Model):
     phone_no = models.CharField(max_length=13, null=True)
     parents_phone_no = models.CharField(max_length=13)
     resi_address = models.CharField(max_length=150)
+    batch_year = models.IntegerField()
     semester = models.IntegerField()
     division = models.CharField(max_length=5)
     rollno = models.IntegerField()
@@ -57,7 +58,7 @@ class transaction(models.Model):
 
 class counts(models.Model):
     ica_counts = models.IntegerField()
-    iet_counts = models.IntegerField()
+    mca_counts = models.IntegerField()
     class Meta:
         db_table = "counts"
     

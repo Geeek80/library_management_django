@@ -43,16 +43,23 @@
                     <th>Receipt No.</th>
                     <th>Enrollment</th>
                     <th>Name</th>
+                    <th>Division</th>
+                    <th>Roll No.</th>
+                    <th>Batch Year</th>
+                    <th>Date Requested</th>
                     <th>Date Approved</th>
                     <th>Amount</th>
                 </tr>
                   {% for row in data %}
                   <tr>
-                    
-                    <td>{{ row.id }}</td>
+                    <td>{{ row.application_no }}</td>
                     <td>{{ row.receipt_no }}</td>
                     <td>{{ row.student_enrollment }}</td>
                     <td>{{names | index:forloop.counter0}}</td>
+                    <td>{{divisions | index:forloop.counter0}}</td>
+                    <td>{{rollno | index:forloop.counter0}}</td>
+                    <td>{{years | index:forloop.counter0}}</td>
+                    <td>{{ row.date }}</td>
                     <td>{{ row.action_date }}</td>
                     <td>{{ row.amount }}</td>
                   </tr>
