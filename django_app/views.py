@@ -494,13 +494,15 @@ def decide(request, id):
         data.status = decision
         if decision == 'approved':
             msg = 'request no '+id+' Documents verified, request '+decision
-            messages.info(request, msg)
+            typ = "info"
             body = 'your request for library fee refund has been '+decision+'\nAmount of Rs.'+str(data.amount)+' will be transfered to your account soon\ncontact library for more details'
         elif decision == 'rejected':
             reason = request.POST.get('reason', '')
+            if data.reason is None:
+                data.reason = ""
             data.reason += '\n'+reason
             msg = 'request no '+id+' is '+decision+' because, '+reason
-            messages.error(request, msg)
+            typ = "error"
             body = 'your request for library fee refund has been '+decision+'\n because, '+reason+'\ncontact library for more details'
         data.action_date = datetime.datetime.now()
         data.save()
@@ -513,7 +515,10 @@ def decide(request, id):
             msg += ' the mail has been sent to '+student_data.name
         except:
             msg += ' mail not sent to '+student_data.name+' due to some problem'
-        messages.info(request, msg)
+        if typ == "info":
+            messages.info(request, msg)
+        elif typ == "error":
+            messages.error(request, msg)
         return redirect('/pending_request')
 
 def deduct(request, id):
