@@ -1,7 +1,7 @@
 import re, random, datetime
 from django.shortcuts import render, redirect
 from django_app.forms import employeeform, loginform, fee_request_form, libloginform
-from django_app.models import mymodel, student, transaction, librarian, counts
+from django_app.models import (mymodel, student, transaction, librarian, counts, book_bank)
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -27,21 +27,59 @@ def add_emp(request):
         form = employeeform()
     return render(request, "add_emp.html", {'form':form})
 
-def book_bank(request):
+def bookbank(request):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
     if request.method == "GET":
         return render(request, "librarian/book_bank.html")
 
-def select_bbank(request):
+def select_bbank(request,val):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
+    
     if request.method == "GET":
         return render(request, "librarian/select_bbank.html")
+    
+    if val == "set_numbers" or val == "save":
+        num = int(request.POST.get("num", 0))
+        semester = int(request.POST.get("semester", 0))
+        
+    context = {
+        "num":num,
+        "semester":semester
+    }
+    if not check_sem_books(request, semester, num):
+        return render(request, "librarian/select_bbank.html", context)
+    if val == "save":
+        bb = book_bank()
+        names = request.POST.get("book_1_name")
+        subjects = request.POST.get("book_1_subject")
+        authors = request.POST.get("book_1_author")
+        msns = request.POST.get("book_1_msn")
+        for i in range(2, num+1):
+            names += ","+request.POST.get("book_{}_name".format(i))
+            subjects += ","+request.POST.get("book_{}_subject".format(i))
+            authors += ","+request.POST.get("book_{}_author".format(i))
+            msns += ","+request.POST.get("book_{}_msn".format(i))
+        bb.subjects = subjects
+        bb.semester = semester
+        bb.books_names = names
+        bb.books_authors = authors
+        bb.books_msn_numbers = msns
+        bb.save()
+        messages.info(request, "the book bank for semester {} have been saved".format(semester))
+        return redirect("/select_bbank/anything")
+    context.update({"books":range(1,num+1)})
+    return render(request, "librarian/select_bbank.html", context)
 
-def edit_emp(request, id):
-    employee = student.objects.get(id=id)
-    return render(request, 'edit_form.html', {'emp':employee})
+def check_sem_books(request, semester, num):
+    if semester > 10 or semester < 1:
+        messages.error(request, "semester can not be greater than 10 or less than 1")
+        return False
+    elif num > 4 or num < 1:
+        messages.error(request, "number of books can not be greater than 4 or less than 1")
+        return False
+    return True
 
 
 def update_emp(request, identity):

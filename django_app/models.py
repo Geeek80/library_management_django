@@ -61,4 +61,13 @@ class counts(models.Model):
     mca_counts = models.IntegerField()
     class Meta:
         db_table = "counts"
+
+class book_bank(models.Model):
+    semester = models.IntegerField()
+    subjects = models.CharField(max_length=60)
+    books_names = models.CharField(max_length=200)
+    books_msn_numbers = models.CharField(max_length=40)
+    books_authors = models.CharField(max_length=100)
+    class Meta:
+        db_table = "book_bank"
     

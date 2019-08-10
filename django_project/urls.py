@@ -32,8 +32,8 @@ urlpatterns = [
     
     # librarian
     path('lib_home', lib_homepage),
-    path('book_bank', book_bank),
-    path('select_bbank', select_bbank),
+    path('book_bank', bookbank),
+    path('select_bbank/<str:val>', select_bbank),
     path('pending_request', pending_request),
     path('view_request/<int:id>', view_request),
     path('image_view/<str:id>', image_view),
@@ -53,7 +53,6 @@ urlpatterns = [
     # others
     path('clean', clean),
     path('delete/<int:identity>', delete_emp),
-    path('edit/<int:id>', edit_emp),
     path('update/<int:identity>', update_emp),
     path('add', add_emp),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
