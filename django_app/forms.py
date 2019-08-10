@@ -23,7 +23,7 @@ class loginform(forms.ModelForm):
         model = student
         fields = ['enrollment', 'password']
         widgets = {
-            'enrollment': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enrollment No.'}),
+            'enrollment': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enrollment No.', 'autofocus':''}),
             'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
         }
 
@@ -32,7 +32,7 @@ class libloginform(forms.ModelForm):
         model = librarian
         fields = ['username', 'password']
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username', 'autofocus':''}),
             'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
         }
 
@@ -53,7 +53,7 @@ class fee_request_form(forms.ModelForm):
         ]
         widgets = {
             'additional_information' : forms.TextInput(attrs= {'class': 'form-control', 'placeholder':'e.g. addmission cancelled'}),
-            'receipt_no' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Receipt No."}),
+            'receipt_no' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Receipt No.", 'autofocus':''}),
             'receipt_date' : forms.DateInput(attrs = {"class":"form-control", "placeholder": "mm/dd/yyyy"}, format=("%m/%d/%Y") ),
             'amount' : forms.NumberInput(attrs = {"class":"form-control", "placeholder":"Library Fee Amount"}),
             'student_enrollment' : forms.TextInput(attrs = {"class":"form-control", "readonly":"", 'placeholder':"e.g: 175170693016"}),

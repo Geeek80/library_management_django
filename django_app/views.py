@@ -27,15 +27,17 @@ def add_emp(request):
         form = employeeform()
     return render(request, "add_emp.html", {'form':form})
 
-def all_requests(request):
+def book_bank(request):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
-    data = transaction.objects.all()
-    context = {}
-    context_name = 'data'
-    pagi(request, data, context_name, context)
-    return render(request, "librarian/all_requests.html", context)
+    if request.method == "GET":
+        return render(request, "librarian/book_bank.html")
 
+def select_bbank(request):
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
+    if request.method == "GET":
+        return render(request, "librarian/select_bbank.html")
 
 def edit_emp(request, id):
     employee = student.objects.get(id=id)
@@ -634,4 +636,4 @@ def generate_report(request):
         return render(request, 'librarian/report.html', context)
     
     else:
-        return render(request, 'librarian/report.html')
+        return render(request, 'librarian/report.html') 

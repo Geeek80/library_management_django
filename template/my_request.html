@@ -11,8 +11,11 @@
             </ul>
             {% endif %}
 
-        {% if transaction_data is not None %}
+        {% if transaction_data is not None%}
             <p> your request No. {{transaction_data.id}} status is : {{transaction_data.status}}</p>
+            {% if transaction_data.status == "rejected" %}
+                <a href="/request" ><button type="button" class="btn btn-outline-primary">Submit Request Again</button></a>
+            {% endif %}
         {% else %}
             
             <h1 style="text-transform: capitalize">You don't have any requests yet!,<br>submit One below</h1>

@@ -32,7 +32,8 @@ urlpatterns = [
     
     # librarian
     path('lib_home', lib_homepage),
-    path('all_requests/', all_requests),
+    path('book_bank', book_bank),
+    path('select_bbank', select_bbank),
     path('pending_request', pending_request),
     path('view_request/<int:id>', view_request),
     path('image_view/<str:id>', image_view),

@@ -1,14 +1,14 @@
 {% extends 'index.html' %}
 
 {% block content %}
-    <div class="container-fluid mt-4 mt-5">
+    <div class="container-fluid mt-4 mt-5 h-100">
         <div class="container align-items-center">
             <h2 class="text-center mb-3">Application For Refund of Library Deposit</h2>
                 <div class="col-md-12 h-75">
                 <fieldset>
                     <form action="/request/" enctype="multipart/form-data" method="POST">
                         {% csrf_token %}
-                        <div class="row">
+                        <div class="row mt-4">
                             <div class="col">
                                 <div class="form-group">
                                     <label class="control-label" for="application_no">Receipt No.:</label>
@@ -39,9 +39,9 @@
                             </div>
 
                     </div>
-                    <div class="row">
+                    <div class="row mt-4">
 
-                            <div class="col-md-3">
+                            <div class="col">
                                     <div class="form-group">
                                         <label class="col-form-label" for="name">Grade history Image:</label>
                                         <span style="color:red;font-size: 21px;">*</span>
@@ -49,29 +49,30 @@
                                     </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col">
                                 <div class="form-group">
                                     <label class="col-form-label" for="name">Last Sem Fee Receipt Image:</label>
                                     {{ form.last_sem_fee_image }}
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col">
                                 <div class="form-group">
                                     <label class="col-form-label" for="name">Library Fee Receipt Image:</label>
                                     {{ form.fee_receipt_image }}
                                 </div>
                             </div>
                             
-                            <div class="col-md-3">
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col">
                                 <div class="form-group">
                                     <label class="col-form-label" for="name">Cancelled cheque Image:</label>
                                     <span style="color:red;font-size: 21px;">*</span>
                                     {{ form.cancelled_cheque_image }}
                                 </div>
                             </div>
-                            
-                            <div class="col-md-3">
+                            <div class="col">
                                 <div class="form-group">
                                     <label class="col-form-label" for="name">Passbook Front Page Image:</label>
                                     <span style="color:red;font-size: 21px;">*</span>
@@ -85,9 +86,9 @@
                                     {{ form.additional_information }}
                                 </div>
                             </div>
-
                         </div>
-                        <div class="row">
+                        </div>
+                        <div class="row mt-4">
                             <div class="col">
                                 <div class="form-group">
                                     <button class="btn btn-outline-primary" type="submit" >Submit Request >></button>
@@ -106,6 +107,7 @@
                     </div>
                     </form>
                 </fieldset>
+                <div class="container">
                 <div style="color:red;text-transform: capitalize;">
                     <ul>
                         <li>
@@ -121,6 +123,7 @@
                             if you don't have last sem fee receipt fine of 100 rs. will be charged.            
                         </li>
                     </ul>
+                </div>
                 </div>
             </div>
         </div>

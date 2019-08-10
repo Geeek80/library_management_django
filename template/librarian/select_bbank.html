@@ -1,0 +1,37 @@
+{% extends 'librarian/index.html' %}
+{% load static %}
+{% block title %} - Select BookBank{% endblock %}
+    {% block content %}
+    <div class="container-fluid mt-4 mt-5 h-100">
+        <div class="container align-items-center">
+            <h2 class="text-center mb-3">Select BookBank</h2>
+                <div class="col-md-12 h-75">
+                <fieldset>
+                    <form action="#" enctype="multipart/form-data" method="POST">
+                        {% csrf_token %}
+                        <div class="row mt-4">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="inputDefault">Semester :</label>
+                                    <input type="text" class="form-control" placeholder="Enter Semester" id="inputDefault">
+                                </div>  
+                            </div>
+                        </div>
+                    
+                    </form>
+                    
+                    <div class="col">
+                            {% if messages %}
+                            <ul class="messages" style="color:red;">
+                                {% for message in messages %}
+                                <li class="text-info"><b>{{ message }}</b></li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                    </div>
+                </fieldset>
+                
+            </div>
+        </div>
+    </div>
+    {% endblock %}
