@@ -88,7 +88,6 @@ def user_login(request, desig=None):
         form = frm
         username = request.POST.get(usrnm)
         password = request.POST.get('password')
-        capt = request.session['capt']
         if form.is_valid():
             try:
                 if desig == 'student':
@@ -104,7 +103,6 @@ def user_login(request, desig=None):
                     'form':form,
                     'error_usr':error_usr,
                     'error_data':data,
-                    'captcha': capt
                 }
                 return render(request, pageload, context)
             msg = None
@@ -120,7 +118,6 @@ def user_login(request, desig=None):
                     context = {
                         'form':form,
                         'error_pass':data,
-                        'captcha' : capt
                     }
                     success = False
                     return render(request, pageload, context)
@@ -131,20 +128,9 @@ def user_login(request, desig=None):
                     'form':form,
                     'error_pas':error_pas,
                     'error_pass':data,
-                    'captcha' : capt
                 }
                 return render(request, pageload, context)
-            if request.POST.get('captcha') == capt:
-                success = True
-            else:
-                error_captcha = "Captcha didn't match"
-                context = {
-                    'form':form,
-                    'error_captcha':error_captcha,
-                    'captcha': capt
-                }
-                return render(request, pageload, context)
-                success = False
+
             # if got success by any way
             if success:
                 request.session[session_var_name] = insan.name
@@ -163,9 +149,7 @@ def user_login(request, desig=None):
             print(form.errors)
     else:   # create a new form
         form = frm
-        capt = random.randint(1000, 9999)
-        request.session['capt'] = str(capt)
-    return render(request, pageload, {'form':form, 'captcha':capt})
+    return render(request, pageload, {'form':form})
 
 def my_request(request):
     if not is_logged_in(request, "student"):
