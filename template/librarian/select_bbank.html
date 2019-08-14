@@ -78,6 +78,36 @@
                 </fieldset>
                 
             </div>
+
+            <div class="containter mt-5">
+                {% if bookbank %}
+                {% for bb in bookbank %}
+                    <table class="table table-striped">
+                        <tbody>
+                        <tr>
+                                <th scope="row">Semester</th>
+                                <th>{{bb.semester}}</th>
+                        </tr>
+                        <tr>
+                            <th scope="row">Subject</th>
+                            <td>{{bb.subjects}}</td>
+                            <th scope="row">MSN No.</th>
+                            <td>{{bb.books_msn_numbers}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Book</th>
+                            <td >{{bb.books_names}}</td>
+                            <th scope="row">Author</th>
+                            <td >{{bb.books_authors}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                        {% endfor %}
+                        {% else %}
+                            <h3>we don't have any BookBank registered yet!</h3>
+                        {% endif %}
+            </div>
+
         </div>
     </div>
     {% endblock %}

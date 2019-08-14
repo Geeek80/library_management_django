@@ -36,31 +36,39 @@ def bookbank(request):
 def select_bbank(request,val):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
-    
+    bookbank = book_bank.objects.all()
+    context = {
+        "bookbank":bookbank
+    }
     if request.method == "GET":
-        return render(request, "librarian/select_bbank.html")
+        return render(request, "librarian/select_bbank.html", context)
     
-    if val == "set_numbers" or val == "save":
+    elif val == "set_numbers" or val == "save":
         num = int(request.POST.get("num", 0))
         semester = int(request.POST.get("semester", 0))
-        
-    context = {
+    bank = book_bank.objects.filter(semester=semester)
+    bookbank = book_bank.objects.all()
+    context.update({
         "num":num,
-        "semester":semester
-    }
+        "semester":semester,
+    })
+    
     if not check_sem_books(request, semester, num):
+        return render(request, "librarian/select_bbank.html", context)
+    elif bank.exists():
+        messages.info(request, "book bank for semester {} is already registered see the table below".format(semester))
         return render(request, "librarian/select_bbank.html", context)
     if val == "save":
         bb = book_bank()
-        names = request.POST.get("book_1_name")
-        subjects = request.POST.get("book_1_subject")
-        authors = request.POST.get("book_1_author")
-        msns = request.POST.get("book_1_msn")
+        names = request.POST.get("book_1_name").strip()
+        subjects = request.POST.get("book_1_subject").strip()
+        authors = request.POST.get("book_1_author").strip()
+        msns = request.POST.get("book_1_msn").strip()
         for i in range(2, num+1):
-            names += ","+request.POST.get("book_{}_name".format(i))
-            subjects += ","+request.POST.get("book_{}_subject".format(i))
-            authors += ","+request.POST.get("book_{}_author".format(i))
-            msns += ","+request.POST.get("book_{}_msn".format(i))
+            names += ", "+request.POST.get("book_{}_name".format(i)).strip()
+            subjects += ", "+request.POST.get("book_{}_subject".format(i)).strip()
+            authors += ", "+request.POST.get("book_{}_author".format(i)).strip()
+            msns += ", "+request.POST.get("book_{}_msn".format(i)).strip()
         bb.subjects = subjects
         bb.semester = semester
         bb.books_names = names
