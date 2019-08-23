@@ -1,0 +1,60 @@
+{% extends 'librarian/index.html' %}
+{% load static %}
+{% block title %} - Issue BookBank{% endblock %}
+    {% block content %}
+    <div class="container-fluid mt-4 mt-5 h-100">
+        <div class="container align-items-center">
+            <h2 class="text-center mb-3">Select Student</h2>
+                <div class="col-md-12 h-75">
+                <fieldset>
+                    <form action="/issue/{% if success %}save{%else%}select_books{%endif%}" method="POST">
+                        {% csrf_token %}
+                        <div class="row mt-3 mb-4">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="inputDefault">Semester :</label>
+                                    <input type="number" class="form-control" placeholder="Enter Semester" name="semester" value="{{semester}}" required>
+                                </div>  
+                            </div>
+                            
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="inputDefault">Enrollment No. :</label>
+                                    <input type="number" class="form-control" placeholder="Enrollment number" name="enrollment" value="{{enrollment}}" required>
+                                </div>  
+                            </div>
+                        </div>
+                        
+                        <div class="containter mt-5">
+                                {% if success %}
+                                <h3 class="mb-4">Select Books</h3>
+                                {% for book in success %}
+                                    {{book.books_names}}
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <input type="submit" class="btn btn-info" value="{% if success %}Issue{%else%}Proceed{%endif%}"/>
+                            </div>
+                        </div>
+                    
+                    </form>
+                    
+                    <div class="col">
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li {%if 'error' in message.tags %}style="color:red;"{%else%}class="text-info"{%endif%}><b>{{ message }}</b></li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </fieldset>
+                
+            </div>
+
+        </div>
+    </div>
+    {% endblock %}

@@ -1,10 +1,10 @@
 {% extends 'librarian/index.html' %}
 {% load static %}
-{% block title %} - Select BookBank{% endblock %}
+{% block title %} - Register BookBank{% endblock %}
     {% block content %}
     <div class="container-fluid mt-4 mt-5 h-100">
         <div class="container align-items-center">
-            <h2 class="text-center mb-3">Select BookBank</h2>
+            <h2 class="text-center mb-3">Register BookBank</h2>
                 <div class="col-md-12 h-75">
                 <fieldset>
                     <form action="/select_bbank/{% if books %}save{%else%}set_numbers{%endif%}" enctype="multipart/form-data" method="POST">
@@ -67,47 +67,16 @@
                     </form>
                     
                     <div class="col">
-                            {% if messages %}
-                            <ul class="messages">
-                                {% for message in messages %}
-                                <li {%if 'error' in message.tags %}style="color:red;"{%else%}class="text-info"{%endif%}><b>{{ message }}</b></li>
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li {%if 'error' in message.tags %}style="color:red;"{%else%}class="text-info"{%endif%}><b>{{ message }}</b></li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
                     </div>
                 </fieldset>
-                
             </div>
-
-            <div class="containter mt-5">
-                {% if bookbank %}
-                {% for bb in bookbank %}
-                    <table class="table table-striped">
-                        <tbody>
-                        <tr>
-                                <th scope="row">Semester</th>
-                                <th>{{bb.semester}}</th>
-                        </tr>
-                        <tr>
-                            <th scope="row">Subject</th>
-                            <td>{{bb.subjects}}</td>
-                            <th scope="row">MSN No.</th>
-                            <td>{{bb.books_msn_numbers}}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Book</th>
-                            <td >{{bb.books_names}}</td>
-                            <th scope="row">Author</th>
-                            <td >{{bb.books_authors}}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                        {% endfor %}
-                        {% else %}
-                            <h3>we don't have any BookBank registered yet!</h3>
-                        {% endif %}
-            </div>
-
         </div>
     </div>
     {% endblock %}

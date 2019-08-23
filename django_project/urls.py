@@ -34,6 +34,7 @@ urlpatterns = [
     path('lib_home', lib_homepage),
     path('book_bank', bookbank),
     path('select_bbank/<str:val>', select_bbank),
+    path('issue/<str:val>', issue),
     path('pending_request', pending_request),
     path('view_request/<int:id>', view_request),
     path('image_view/<str:id>', image_view),

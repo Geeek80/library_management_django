@@ -31,32 +31,32 @@ def bookbank(request):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
     if request.method == "GET":
-        return render(request, "librarian/book_bank.html")
+        bookbank = book_bank.objects.all()
+        context = {
+            "bookbank":bookbank
+        }
+        return render(request, "librarian/book_bank.html", context)
 
 def select_bbank(request,val):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
-    bookbank = book_bank.objects.all()
-    context = {
-        "bookbank":bookbank
-    }
+    
     if request.method == "GET":
-        return render(request, "librarian/select_bbank.html", context)
+        return render(request, "librarian/select_bbank.html")
     
     elif val == "set_numbers" or val == "save":
         num = int(request.POST.get("num", 0))
         semester = int(request.POST.get("semester", 0))
     bank = book_bank.objects.filter(semester=semester)
-    bookbank = book_bank.objects.all()
-    context.update({
+    context = {
         "num":num,
         "semester":semester,
-    })
+    }
     
     if not check_sem_books(request, semester, num):
         return render(request, "librarian/select_bbank.html", context)
     elif bank.exists():
-        messages.info(request, "book bank for semester {} is already registered see the table below".format(semester))
+        messages.error(request, "book bank for semester {} is already registered.".format(semester))
         return render(request, "librarian/select_bbank.html", context)
     if val == "save":
         bb = book_bank()
@@ -79,6 +79,36 @@ def select_bbank(request,val):
         return redirect("/select_bbank/anything")
     context.update({"books":range(1,num+1)})
     return render(request, "librarian/select_bbank.html", context)
+
+def issue(request, val):
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
+    if request.method == "GET":
+        return render(request, "librarian/issue.html")
+    elif val == "select_books" or "save":
+        enrollment = request.POST.get("enrollment", 0)
+        semester = int(request.POST.get("semester", 0))
+    
+    context = {
+        "enrollment":enrollment,
+        "semester":semester,
+    }
+    bank = book_bank.objects.filter(semester=semester)
+    stud = student.objects.filter(enrollment=enrollment)
+
+    if semester > 10 or semester < 1:
+        messages.error(request, "semester can not be greater than 10 or less than 1")
+        return render(request, "librarian/issue.html", context)
+    elif not bank.exists():
+        messages.error(request, "book bank for semester {} is not registered.".format(semester))
+        return render(request, "librarian/issue.html", context)
+    elif not stud.exists():
+        messages.error(request, "Student with enrollment {} not found.".format(enrollment))
+        return render(request, "librarian/issue.html", context)
+    else:
+        context.update({"success":bank})
+        
+    return render(request, "librarian/issue.html", context)
 
 def check_sem_books(request, semester, num):
     if semester > 10 or semester < 1:
