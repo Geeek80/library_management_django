@@ -12,15 +12,36 @@
                         <div class="row mt-3 mb-4">
                             <div class="col">
                                 <div class="form-group">
+                                    <label class="col-form-label" for="inputDefault">Calender :</label>
+                                    <input type="text" class="form-control" placeholder="e.g. w19 or s18" name="claender" value="{{calender}}" required>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="inputDefault">Stream :</label>
+                                    <input type="text" class="form-control" placeholder="e.g. mca or imca" name="stream" value="{{stream}}" required>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row mt-3 mb-4">
+                            <div class="col">
+                                <div class="form-group">
                                     <label class="col-form-label" for="inputDefault">Semester :</label>
-                                    <input type="number" class="form-control" placeholder="Enter Semester" name="semester" value="{{semester}}" required>
+                                    <select name="semester" class="form-control">
+                                        {% for i in '0123456789'|make_list %}
+                                            <option value="{{forloop.counter}}">{{forloop.counter}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <!-- <input type="number" class="form-control" placeholder="Enter Semester" name="semester" value="{{semester}}" min="1" max="10" required> -->
                                 </div>  
                             </div>
                             
                             <div class="col">
                                 <div class="form-group">
                                     <label class="col-form-label" for="inputDefault">Number of Books :</label>
-                                    <input type="number" class="form-control" placeholder="Number of books to be assigned" name="num" value="{{num}}" required>
+                                    <input type="number" class="form-control" placeholder="Number of books to be assigned" name="num" value="{{num}}" min="1" max="4" required>
                                 </div>  
                             </div>
                         </div>

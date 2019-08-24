@@ -37,6 +37,10 @@ class librarian(models.Model):
         db_table = 'librarian'
 
 class transaction(models.Model):
+    # tem = mymodel.objects.all()
+    # tem = [(i.ename, i.ename) for i in tem]
+
+    # temp = models.CharField(max_length=6, choices= tem, default='green')
     date = models.DateTimeField(auto_now_add = True)
     receipt_no = models.IntegerField(null=True, blank=True)
     receipt_date = models.DateField(blank=True, null=True)
