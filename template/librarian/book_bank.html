@@ -16,6 +16,15 @@
                                         <a href="/select_bbank/anything"><button type="button" class="btn btn-outline-primary">Register BookBank</button></a>
                                         <a href="/issue/a"><button type="button" class="btn btn-outline-primary ml-4">Issue</button></a>                       
                                 </div>
+                                <div class="col">
+                                    {% if messages %}
+                                    <ul class="messages">
+                                        {% for message in messages %}
+                                        <li {%if 'error' in message.tags %}style="color:red;"{%else%}class="text-info"{%endif%}><b>{{ message }}</b></li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
 

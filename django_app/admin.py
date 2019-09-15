@@ -36,6 +36,12 @@ class studentadmin(admin.ModelAdmin):
         next(io_string)
 
         for col in csv.reader(io_string, delimiter=','):
+            if student.objects.filter(enrollment=col[1]).exists():
+                messages.error(request, "student with enrollment: {} already exists try changin'".format(col[1]))
+                return HttpResponseRedirect('./')
+            if student.objects.filter(email=col[8]).exists():
+                messages.error(request, "student with email: {} already exists try changin'".format(col[8]))
+                return HttpResponseRedirect('./')
             _, created = student.objects.update_or_create(
                 name=col[0],
                 enrollment=col[1],
@@ -46,6 +52,9 @@ class studentadmin(admin.ModelAdmin):
                 division = col[6],
                 rollno = col[7],
                 email = col[8],
+                stream = col[9],
+                parents_phone_no = col[10],
+                batch_year = col[11],
             )
         self.message_user(request, 'the data has been uploaded')
         return HttpResponseRedirect('./')

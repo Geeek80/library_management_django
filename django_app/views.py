@@ -47,13 +47,21 @@ def select_bbank(request,val):
     elif val == "set_numbers" or val == "save":
         num = int(request.POST.get("num", 0))
         semester = int(request.POST.get("semester", 0))
+        calender = request.POST.get("calender")
+        stream = request.POST.get("stream")
     bank = book_bank.objects.filter(semester=semester)
     context = {
         "num":num,
         "semester":semester,
+        "calender":calender,
+        "stream":stream,
     }
     
     if not check_sem_books(request, semester, num):
+        return render(request, "librarian/select_bbank.html", context)
+    elif not check_stream(request, stream):
+        return render(request, "librarian/select_bbank.html", context)
+    elif not check_calender(request, calender):
         return render(request, "librarian/select_bbank.html", context)
     elif bank.exists():
         messages.error(request, "book bank for semester {} is already registered.".format(semester))
@@ -63,7 +71,7 @@ def select_bbank(request,val):
         names = request.POST.get("book_1_name").strip()
         subjects = request.POST.get("book_1_subject").strip()
         authors = request.POST.get("book_1_author").strip()
-        msns = request.POST.get("book_1_msn").strip()
+        ssns = request.POST.get("book_1_ssn").strip()
         for i in range(2, num+1):
             names += ", "+request.POST.get("book_{}_name".format(i)).strip()
             subjects += ", "+request.POST.get("book_{}_subject".format(i)).strip()
@@ -73,10 +81,12 @@ def select_bbank(request,val):
         bb.semester = semester
         bb.books_names = names
         bb.books_authors = authors
-        bb.books_msn_numbers = msns
+        bb.books_ssn_numbers = ssns
+        bb.stream = stream
+        bb.calender = calender
         bb.save()
         messages.info(request, "the book bank for semester {} have been saved".format(semester))
-        return redirect("/select_bbank/anything")
+        return redirect("/book_bank")
     context.update({"books":range(1,num+1)})
     return render(request, "librarian/select_bbank.html", context)
 
@@ -119,6 +129,21 @@ def check_sem_books(request, semester, num):
         return False
     return True
 
+def check_stream(request, stream):
+    streams = [
+        "mca",
+        "imca",
+    ]
+    if stream.lower() not in streams:
+        messages.error(request, "Unkown Stream: {}".format(stream))
+        return False
+    return True
+
+def check_calender(request, calender):
+    if not re.match(r'[w|s](19$|[2-4][0-9]$)', calender.lower()):
+        messages.error(request, 'invalid calender : '+calender)
+        return False
+    return True
 
 def update_emp(request, identity):
     emp = mymodel.objects.get(id=identity)
@@ -363,6 +388,7 @@ def view_request(request, id):
         return redirect("/login/librarian")
     request_data = transaction.objects.get(id = id)
     student_data = student.objects.get(enrollment = request_data.student_enrollment)
+    print(request_data.fee_receipt_image)
     return render(request, 'librarian/view_request.html', {'data':request_data, 'student':student_data})
 
 def clean(request):

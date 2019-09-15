@@ -1,2 +1,2 @@
-name,enrollment,password,phone,resi_address,semester,division,rollno,email
-ashok,134224,,89898,surat,4,b,40,email@email.com
+name,enrollment,password,phone,resi_address,semester,division,rollno,email,stream,parent_phone_number,batch_year
+someone,1324,,89898,surat,4,b,40,email@email.com,mca,846058,2017

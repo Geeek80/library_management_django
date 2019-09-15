@@ -13,7 +13,7 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label class="col-form-label" for="inputDefault">Calender :</label>
-                                    <input type="text" class="form-control" placeholder="e.g. w19 or s18" name="claender" value="{{calender}}" required>
+                                    <input type="text" class="form-control" placeholder="e.g. w19 for winter 2019" name="calender" value="{{calender}}" required>
                                 </div>
                             </div>
 
@@ -29,12 +29,7 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label class="col-form-label" for="inputDefault">Semester :</label>
-                                    <select name="semester" class="form-control">
-                                        {% for i in '0123456789'|make_list %}
-                                            <option value="{{forloop.counter}}">{{forloop.counter}}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <!-- <input type="number" class="form-control" placeholder="Enter Semester" name="semester" value="{{semester}}" min="1" max="10" required> -->
+                                    <input type="number" class="form-control" placeholder="Enter Semester" name="semester" value="{{semester}}" min="1" max="10" required>
                                 </div>  
                             </div>
                             
@@ -71,8 +66,8 @@
                                 
                                 <div class="col">
                                     <div class="form-group">
-                                        <label class="col-form-label" for="inputDefault">Book {{i}} Msn Number:</label>
-                                        <input type="text" class="form-control" placeholder="Book {{i}} Msn Number" name="book_{{i}}_msn" required>
+                                        <label class="col-form-label" for="inputDefault">Book {{i}} Ssn Number:</label>
+                                        <input type="text" class="form-control" placeholder="Book {{i}} Msn Number" name="book_{{i}}_ssn" required>
                                     </div>  
                                 </div>
 
@@ -86,15 +81,16 @@
                         </div>
                     
                     </form>
-                    
-                    <div class="col">
-                        {% if messages %}
-                        <ul class="messages">
-                            {% for message in messages %}
-                            <li {%if 'error' in message.tags %}style="color:red;"{%else%}class="text-info"{%endif%}><b>{{ message }}</b></li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
+                    <div class="row mt-4">
+                        <div class="col">
+                            {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                <li {%if 'error' in message.tags %}style="color:red;"{%else%}class="text-info"{%endif%}><b>{{ message }}</b></li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
                     </div>
                 </fieldset>
             </div>
