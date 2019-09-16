@@ -50,7 +50,6 @@ class fee_request_form(forms.ModelForm):
             'passbook_image',
             'last_sem_fee_image',
             'grade_history_image',
-            # 'temp'
         ]
         widgets = {
             'additional_information' : forms.TextInput(attrs= {'class': 'form-control', 'placeholder':'e.g. addmission cancelled'}),

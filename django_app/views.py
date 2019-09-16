@@ -273,6 +273,10 @@ def requestt(request):
         enrollment = request.POST.get('student_enrollment')
         stud = student.objects.get(enrollment=enrollment)
         
+        trans = transaction.objects.filter(student_enrollment = enrollment, status = "rejected")
+        if trans.exists():
+            trans.delete()
+
         if form.is_valid():
             newform = form.save(commit=False)
             newform.status = "pending"
@@ -306,7 +310,7 @@ def requestt(request):
             messages.info(request, 'Your Request has been Submitted Successfully')
             return redirect("/my_request")
         else:
-            print(form.errors)
+            messages.error(request, form.errors)
     return render(request, 'request.html', {'form':form})
 
 def logout(request, desig):
