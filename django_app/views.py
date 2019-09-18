@@ -1,4 +1,4 @@
-import re, random, datetime
+import re, random, datetime, calendar
 from django.shortcuts import render, redirect
 from django_app.forms import employeeform, loginform, fee_request_form, libloginform
 from django_app.models import (mymodel, student, transaction, librarian, counts, book_bank)
@@ -281,8 +281,8 @@ def requestt(request):
             newform = form.save(commit=False)
             newform.status = "pending"
 
-            if newform.amount > 3000:
-                messages.info(request, 'amount of library fee can not be greater than 3000')
+            if newform.amount > 3000 or newform.amount < 1:
+                messages.info(request, 'amount of library fee can not be > 3000 or < 1')
                 return redirect('/request')
             
             if newform.receipt_date != None:
@@ -713,6 +713,7 @@ def generate_report(request):
         else:
             messages.info(request, 'we don\'t have data of '+moye)
             return redirect('/report')
+        month = calendar.month_name[month]
         context = {
             'data':data,
             'sum':total,

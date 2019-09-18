@@ -26,9 +26,9 @@
 </div>
 {% else %}
     <div class="containter text-center">
-        <h3 class="display-4 mt-4 mb-4">
+        <h4 class="mt-4 mb-4">
             Report for {{ month }} - {{ year }}
-        </h3>
+        </h4>
         <table class="table table-striped">
                 <tbody>
                     
@@ -59,8 +59,8 @@
                     <td>{{divisions | index:forloop.counter0}}</td>
                     <td>{{rollno | index:forloop.counter0}}</td>
                     <td>{{years | index:forloop.counter0}}</td>
-                    <td>{{ row.date }}</td>
-                    <td>{{ row.action_date }}</td>
+                    <td>{{ row.date.date }}</td>
+                    <td>{{ row.action_date.date }}</td>
                     <td>{{ row.amount }}</td>
                   </tr>
                   

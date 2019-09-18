@@ -14,7 +14,7 @@ class mymodel(models.Model):
 
 class student(models.Model):
     stream = models.CharField(max_length=5)
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=150)
     enrollment = models.CharField(max_length=15, unique=True)
     password = models.CharField(max_length=21, null=True, blank=True)
     phone_no = models.CharField(max_length=13, null=True)
@@ -29,7 +29,7 @@ class student(models.Model):
         db_table = 'student'
 
 class librarian(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=150)
     username = models.CharField(max_length=15)
     password = models.CharField(max_length=21)
     email = models.EmailField()
