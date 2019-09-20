@@ -1,7 +1,6 @@
 from django.db import models
 
 # Create your models here.
-
 class mymodel(models.Model):
     eid = models.IntegerField()
     ename = models.CharField(max_length=20)
@@ -11,6 +10,7 @@ class mymodel(models.Model):
     class Meta:
         db_table = 'employ' # name of table to be created
         ordering = [ '-ename' ] # sorting enames by descending order wherever they're displayed
+
 
 class student(models.Model):
     stream = models.CharField(max_length=5)
@@ -28,13 +28,15 @@ class student(models.Model):
     class Meta:
         db_table = 'student'
 
+
 class librarian(models.Model):
     name = models.CharField(max_length=150)
-    username = models.CharField(max_length=15)
+    username = models.CharField(max_length=15, unique=True)
     password = models.CharField(max_length=21)
     email = models.EmailField()
     class Meta:
         db_table = 'librarian'
+
 
 class transaction(models.Model):
     date = models.DateTimeField(auto_now_add = True)
@@ -56,6 +58,7 @@ class transaction(models.Model):
     class Meta:
         db_table = "transaction"
 
+
 class counts(models.Model):
     ica_counts = models.IntegerField()
     mca_counts = models.IntegerField()
@@ -65,11 +68,12 @@ class counts(models.Model):
 class book_bank(models.Model):
     semester = models.IntegerField()
     stream = models.CharField(max_length=10)
-    calender = models.CharField(max_length=10)
+    calendar = models.CharField(max_length=10)
     subjects = models.CharField(max_length=60)
     books_names = models.CharField(max_length=200)
     books_ssn_numbers = models.CharField(max_length=40)
     books_authors = models.CharField(max_length=100)
     class Meta:
         db_table = "book_bank"
+        unique_together = (('stream', 'calendar', 'semester'),)
     

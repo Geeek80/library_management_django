@@ -56,4 +56,5 @@ urlpatterns = [
     path('delete/<int:identity>', delete_emp),
     path('update/<int:identity>', update_emp),
     path('add', add_emp),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

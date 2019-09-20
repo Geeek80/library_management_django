@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from .models import mymodel, student, transaction
+from .models import mymodel, student, transaction, book_bank
 from django.urls import path
 from django.http import HttpResponseRedirect
 import io, csv 
@@ -63,3 +63,4 @@ class studentadmin(admin.ModelAdmin):
 admin.site.register(mymodel)
 admin.site.register(transaction)
 admin.site.register(student, studentadmin)
+admin.site.register(book_bank)

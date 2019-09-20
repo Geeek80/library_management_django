@@ -47,13 +47,13 @@ def select_bbank(request,val):
     elif val == "set_numbers" or val == "save":
         num = int(request.POST.get("num", 0))
         semester = int(request.POST.get("semester", 0))
-        calender = request.POST.get("calender")
+        calendar = request.POST.get("calendar")
         stream = request.POST.get("stream")
-    bank = book_bank.objects.filter(semester=semester)
+    bank = book_bank.objects.filter(semester=semester, stream=stream, calendar=calendar)
     context = {
         "num":num,
         "semester":semester,
-        "calender":calender,
+        "calendar":calendar,
         "stream":stream,
     }
     
@@ -61,10 +61,10 @@ def select_bbank(request,val):
         return render(request, "librarian/select_bbank.html", context)
     elif not check_stream(request, stream):
         return render(request, "librarian/select_bbank.html", context)
-    elif not check_calender(request, calender):
+    elif not check_calendar(request, calendar):
         return render(request, "librarian/select_bbank.html", context)
     elif bank.exists():
-        messages.error(request, "book bank for semester {} is already registered.".format(semester))
+        messages.error(request, "book bank for year {} {} semester {} is already registered.".format(calendar, stream, semester))
         return render(request, "librarian/select_bbank.html", context)
     if val == "save":
         bb = book_bank()
@@ -83,8 +83,9 @@ def select_bbank(request,val):
         bb.books_authors = authors
         bb.books_ssn_numbers = ssns
         bb.stream = stream
-        bb.calender = calender
+        bb.calendar = calendar
         bb.save()
+
         messages.info(request, "the book bank for semester {} have been saved".format(semester))
         return redirect("/book_bank")
     context.update({"books":range(1,num+1)})
@@ -139,9 +140,9 @@ def check_stream(request, stream):
         return False
     return True
 
-def check_calender(request, calender):
-    if not re.match(r'[w|s](19$|[2-4][0-9]$)', calender.lower()):
-        messages.error(request, 'invalid calender : '+calender)
+def check_calendar(request, calendar):
+    if not re.match(r'[w|s](19$|[2-4][0-9]$)', calendar.lower()):
+        messages.error(request, 'invalid calendar : '+calendar)
         return False
     return True
 
@@ -247,7 +248,7 @@ def user_login(request, desig=None):
                         del request.session[id+'_otp']
                 return redirect(success_page)
         else:
-            print(form.errors)
+            messages.error(request, form.errors)
     else:   # create a new form
         form = frm
     return render(request, pageload, {'form':form})
@@ -280,16 +281,6 @@ def requestt(request):
         if form.is_valid():
             newform = form.save(commit=False)
             newform.status = "pending"
-
-            if newform.amount > 3000 or newform.amount < 1:
-                messages.info(request, 'amount of library fee can not be > 3000 or < 1')
-                return redirect('/request')
-            
-            if newform.receipt_date != None:
-                min_date = datetime.date.today() - datetime.timedelta(days=183)
-                if newform.receipt_date > datetime.date.today() or min_date < newform.receipt_date:
-                    messages.info(request, 'date cannot be greater than '+str(min_date)+' bro')
-                    return redirect('/request')
             
             if 'fee_receipt_image' not in request.FILES:
                 newform.amount -= 100
@@ -627,20 +618,20 @@ def deduct(request, id):
         if deduct > 0 and reason != "":
             data.amount -= deduct
             data.save()
-            msg = 'the charges have been deducted from amount because '+reason
+            info = 'the charges have been deducted from amount because, '+reason
             
             data.reason = reason
-            msg = 'amout of Rs.'+str(deduct)+' has been deducted from your library fee refund\nbecause, '+reason+', contact library for more details'
+            msg = 'amout of Rs.'+str(deduct)+' has been deducted from your library fee refund because, '+reason+', contact library for more details'
             
             subject = 'noreply@libraryfeerefund.com'
             from_mail = settings.EMAIL_HOST_USER
             to_mail = [student_data.email]
             try:
                 send_mail(subject, msg, from_mail, to_mail, fail_silently=False)
-                msg += ' the mail has been sent to '+student_data.name
+                info += ' the mail has been sent to '+student_data.name
             except:
-                msg += ' mail not sent to '+student_data.name+'due to some problem'
-            messages.info(request, msg)
+                info += ' mail not sent to '+student_data.name+' due to some problem'
+            messages.info(request, info)
             return redirect('/view_request/'+id)
     else:
         context = {
@@ -693,10 +684,13 @@ def generate_report(request):
             messages.error(request, "invalid month {}".format(month))
             return redirect("/report")
 
-        if year < 2000 or year > datetime.datetime.now().year:
-            messages.error(request, "year cannot be less than 2000 and greater than current year")
+        elif year < 2000:
+            messages.error(request, "year cannot be less than 2000")
             return redirect('/report')
         
+        elif (month > datetime.datetime.now().month and year == datetime.datetime.now().year) or year > datetime.datetime.now().year:
+            messages.error(request, "how can i generate future report of {}/{}".format(month, year))
+            return redirect('/report')
         
         data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
         total, temp = 0, 0
