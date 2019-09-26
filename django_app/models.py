@@ -33,9 +33,22 @@ class librarian(models.Model):
     name = models.CharField(max_length=150)
     username = models.CharField(max_length=15, unique=True)
     password = models.CharField(max_length=21)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
+    phone_no = models.CharField(max_length=13, null=True)
+    resi_address = models.CharField(max_length=150)
     class Meta:
         db_table = 'librarian'
+
+
+class accountant(models.Model):
+    name = models.CharField(max_length=150)
+    username = models.CharField(max_length=15, unique=True)
+    password = models.CharField(max_length=21)
+    email = models.EmailField(unique=True)
+    phone_no = models.CharField(max_length=13)
+    resi_address = models.CharField(max_length=150)
+    class Meta:
+        db_table = 'accountant'
 
 
 class transaction(models.Model):

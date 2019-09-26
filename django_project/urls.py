@@ -42,7 +42,10 @@ urlpatterns = [
     path('deduct/<str:id>', deduct),
     path('report', generate_report),
 
-    # for both
+    # accountant
+    path('acc_home', acc_homepage),
+
+    # for all
     path('', login),
     path('login/<str:desig>', user_login),
     path('logout/<str:desig>', logout),

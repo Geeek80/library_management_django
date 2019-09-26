@@ -1,6 +1,6 @@
 import re, datetime
 from django import forms
-from django_app.models import mymodel, student, transaction, librarian
+from django_app.models import mymodel, student, transaction, librarian, accountant
 
 class employeeform(forms.ModelForm):
     class Meta:
@@ -67,6 +67,27 @@ class libloginform(forms.Form):
             }
         ),
         max_length=librarian._meta.get_field('password').max_length
+        )
+
+class acc_login_form(forms.Form):
+    username = forms.CharField(
+        widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Username',
+                'autofocus':''
+            }
+        ),
+        max_length=accountant._meta.get_field('username').max_length
+        )
+    password = forms.CharField(
+        widget = forms.PasswordInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Password'
+            }
+        ),
+        max_length=accountant._meta.get_field('password').max_length
         )
 
 class fee_request_form(forms.ModelForm):

@@ -20,23 +20,20 @@
                     
                     <li class="nav-item">
                     
-                      <a class="nav-link" href="/lib_home">Home <span class="sr-only">(current)</span></a>
+                      <a class="nav-link" href="/acc_home">Home <span class="sr-only">(current)</span></a>
                     </li>
-                    {% if 'lib_name' in request.session %}
+                    {% if 'acc_name' in request.session %}
                       <li class="nav-item">
-                          <a class="nav-link" href="/pending_request">Pending Requests</a>
+                          <a class="nav-link" href="#">Pending Requests</a>
                       </li>
                       <li class="nav-item">
-                          <a class="nav-link" href="/book_bank" >Book Bank</a>
+                        <a class="nav-link" href="#">Generate Reports</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="/report">Generate Reports</a>
+                          <a class="nav-link" href="/change_password/accountant">Change Password</a>
                       </li>
                       <li class="nav-item">
-                          <a class="nav-link" href="/change_password/librarian">Change Password</a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="/logout/librarian">Logout</a>
+                          <a class="nav-link" href="/logout/accountant">Logout</a>
                       </li>
                     {% endif %}
                   </ul>

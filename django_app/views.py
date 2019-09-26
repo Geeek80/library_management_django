@@ -1,7 +1,7 @@
 import re, random, datetime, calendar
 from django.shortcuts import render, redirect
-from django_app.forms import employeeform, loginform, fee_request_form, libloginform
-from django_app.models import (mymodel, student, transaction, librarian, counts, book_bank)
+from django_app.forms import employeeform, loginform, fee_request_form, libloginform, acc_login_form
+from django_app.models import (mymodel, student, transaction, librarian, counts, book_bank, accountant)
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -175,13 +175,24 @@ def user_login(request, desig=None):
         pageload = 'login.html'
         success_page = "/home"
     
-    if desig == 'librarian':
+    elif desig == 'librarian':
         session_var_name = 'lib_name'
         frm = libloginform(request.POST)
         usrnm = 'username'
         model = librarian
         pageload = 'librarian/lib_login.html'
         success_page = "/lib_home"
+    
+    elif desig == 'accountant':
+        session_var_name = 'acc_name'
+        frm = acc_login_form(request.POST)
+        usrnm = 'username'
+        model = accountant
+        pageload = 'accountant/acc_login.html'
+        success_page = "/acc_home"
+    else:
+        messages.error(request, "unkown designation to login")
+        return redirect("/")
 
     if is_logged_in(request, desig, False):
         return redirect(success_page)
@@ -197,6 +208,9 @@ def user_login(request, desig=None):
                 elif desig == 'librarian':
                     insan = model.objects.get(username=username)
                     id = str(insan.id)
+                elif desig == 'accountant':
+                    insan = model.objects.get(username=username)
+
             except:
                 success = False
                 data = "sorry that "+usrnm+" didn't work"
@@ -246,6 +260,10 @@ def user_login(request, desig=None):
                     request.session['lib_username'] = insan.username
                     if id+'_otp' in request.session:
                         del request.session[id+'_otp']
+                elif desig == 'accountant':
+                    request.session['acc_username'] = insan.username
+                    if 'acc_'+insan.username+'_otp' in request.session:
+                        del request.session['acc_'+insan.username+'_otp']
                 return redirect(success_page)
         else:
             messages.error(request, form.errors)
@@ -309,22 +327,28 @@ def logout(request, desig):
         if 'name' and 'enrollment' in request.session:
             del request.session['name']
             del request.session['enrollment']
-    if desig == 'librarian':
+    
+    elif desig == 'librarian':
         if 'lib_name' and 'lib_username' in request.session:
             del request.session['lib_name']
             del request.session['lib_username']
+    
+    elif desig == 'accountant':
+        if 'acc_name' and 'acc_username' in request.session:
+            del request.session['acc_name']
+            del request.session['acc_username']
     return redirect('/')
 
 
 def otp_login(request, desig):
+    redir = '/login/'+desig
+    action = '/otplogin/'+desig
     if desig == 'student':
         frm = loginform()
         usrnm = 'enrollment'
         pageload = 'login.html'
         model = student
         with_ini = loginform(initial={usrnm:request.POST.get(usrnm)})
-        redir = '/login/'+desig
-        action = '/otplogin/'+desig
         action_name = 'enr_only_action'
     
     elif desig == 'librarian':
@@ -333,8 +357,14 @@ def otp_login(request, desig):
         pageload = 'librarian/lib_login.html'
         model = librarian
         with_ini = libloginform(initial={usrnm:request.POST.get(usrnm)})
-        redir = '/login/'+desig
-        action = '/otplogin/'+desig
+        action_name = usrnm+'_only_action'
+    
+    elif desig == 'accountant':
+        frm = acc_login_form()
+        usrnm = 'username'
+        pageload = 'accountant/acc_login.html'
+        model = accountant
+        with_ini = acc_login_form(initial={usrnm:request.POST.get(usrnm)})
         action_name = usrnm+'_only_action'
 
     if request.method == 'GET':
@@ -347,6 +377,8 @@ def otp_login(request, desig):
             if desig == 'student':
                 insan = model.objects.get(enrollment=username)
             elif desig == 'librarian':
+                insan = model.objects.get(username=username)
+            elif desig == 'accountant':
                 insan = model.objects.get(username=username)
         except:
             data = "sorry that "+usrnm+" didn't work"
@@ -366,7 +398,7 @@ def otp_login(request, desig):
         except:
             if username+'_otp' in request.session:
                 del request.session[username+'_otp']
-            messages.error(request, 'could not send email, something went wrong...')
+            messages.error(request, 'could not send email, maybe you\'re not connected to internet  or something went wrong...')
         return redirect(redir)
 
 
@@ -397,11 +429,15 @@ def is_logged_in(request, desig, disp_msg=True):
         if 'name' and 'enrollment' in request.session:
             return True
 
-    if desig == "librarian":
+    elif desig == "librarian":
         if 'lib_name' and 'lib_username' in request.session:
             return True
-    msg = 'please login to continue...' if disp_msg else ""
-    messages.error(request, msg)
+    
+    elif desig == "accountant":
+        if 'acc_name' and 'acc_username' in request.session:
+            return True
+    msg = 'please login to continue...' 
+    messages.error(request, msg) if disp_msg else ""
     return False
 
 def change_pass(request, desig):

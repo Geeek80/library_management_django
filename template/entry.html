@@ -34,11 +34,24 @@
                             <!-------null------>
                         </div>
                         {% block content %}
-                        <div class="col-md-5 text-center">
-                                <a href="/login/student"><button type="button" class="btn btn-outline-primary">Student Login</button></a>
-                                <a href="/login/librarian"><button type="button" class="btn btn-outline-primary ml-4">Librarian Login</button></a>                       
+                        <div class="col-md-6 text-center">
+                            <a href="/admin"><button type="button" class="btn btn-outline-danger">Admin Login</button></a>
+                            <a href="/login/student"><button type="button" class="btn btn-outline-primary ml-4">Student Login</button></a>
+                            <a href="/login/librarian"><button type="button" class="btn btn-outline-primary ml-4">Librarian Login</button></a>                       
+                            <a href="/login/accountant"><button type="button" class="btn btn-outline-primary ml-4">Accountant Login</button></a>                       
                         </div>
                         {% endblock %}
+                    </div>
+                    <div class="row">
+                        <div class="col text-center mt-4">
+                            {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                <li {%if 'error' in message.tags %}style="color:red;"{%else%}class="text-info"{%endif%}><b>{{ message }}</b></li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 

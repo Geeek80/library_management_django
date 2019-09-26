@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django_app.models import student, librarian
+from django_app.models import student, librarian, accountant
 from django_app.views import set_pass, is_logged_in
 
 def homepage(request):
@@ -23,4 +23,15 @@ def lib_homepage(request):
         if user.password=='' or user.password == None:
             return redirect('/set_pass/librarian')
         return render(request, "librarian/index.html", {'user':user})
+
+
+def acc_homepage(request):
+    if not is_logged_in(request, "accountant"):
+        return redirect("/login/accountant")
+    else:
+        modle = accountant
+        user = accountant.objects.get(username=request.session['acc_username'])
+        if user.password=='' or user.password == None:
+            return redirect('/set_pass/accountant')
+        return render(request, "accountant/index.html", {'user':user})
         
