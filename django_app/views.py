@@ -207,7 +207,6 @@ def user_login(request, desig=None):
                    insan = model.objects.get(enrollment=username)
                 elif desig == 'librarian':
                     insan = model.objects.get(username=username)
-                    id = str(insan.id)
                 elif desig == 'accountant':
                     insan = model.objects.get(username=username)
 
@@ -253,17 +252,17 @@ def user_login(request, desig=None):
                 if msg or None:
                     messages.info(request, msg)
                 if desig == 'student':
-                    request.session[usrnm] = insan.enrollment
+                    request.session[usrnm] = username
                     if username+'_otp' in request.session:
                         del request.session[username+'_otp']
                 elif desig == 'librarian':
-                    request.session['lib_username'] = insan.username
-                    if id+'_otp' in request.session:
-                        del request.session[id+'_otp']
+                    request.session['lib_username'] = username
+                    if username+'_otp' in request.session:
+                        del request.session[username+'_otp']
                 elif desig == 'accountant':
-                    request.session['acc_username'] = insan.username
-                    if 'acc_'+insan.username+'_otp' in request.session:
-                        del request.session['acc_'+insan.username+'_otp']
+                    request.session['acc_username'] = username
+                    if username+'_otp' in request.session:
+                        del request.session[username+'_otp']
                 return redirect(success_page)
         else:
             messages.error(request, form.errors)
@@ -389,15 +388,13 @@ def otp_login(request, desig):
         from_mail = settings.EMAIL_HOST_USER
         temp_mail = (insan.email[0:2]) + 'x'*(len(insan.email)-5) + (insan.email[-5:])
         to_mail = [insan.email]
+        otp = str(random.randint(1000, 9999))
+        request.session[username+'_otp'] = otp
         try:
-            otp = str(random.randint(1000, 9999))
-            request.session[username+'_otp'] = otp
             body = 'your otp for library fee refund system '+desig+' login is '+otp+' login again using this as password do not share this with anyone'
             send_mail(subject, body, from_mail, to_mail, fail_silently=False)
             messages.info(request, 'the mail has been sent to '+temp_mail)
         except:
-            if username+'_otp' in request.session:
-                del request.session[username+'_otp']
             messages.error(request, 'could not send email, maybe you\'re not connected to internet  or something went wrong...')
         return redirect(redir)
 
@@ -409,6 +406,15 @@ def pending_request(request):
     if not pendings.exists():
         pendings = None
     return render(request, "librarian/pending_request.html", {'pending_data':pendings})
+
+
+def pending_request_accountant(request):
+    if not is_logged_in(request, "accountant"):
+        return redirect("/login/accountant")
+    pendings = transaction.objects.filter(status = 'approved')
+    if not pendings.exists():
+        pendings = None
+    return render(request, "accountant/pending_request_accountant.html", {'pending_data':pendings})
 
 def view_request(request, id):
     if not is_logged_in(request, "librarian"):
@@ -453,13 +459,22 @@ def change_pass(request, desig):
             print('student not found')
             return render(request, pageload)
     
-    if desig == 'librarian':
+    elif desig == 'librarian':
         username = request.session['lib_username']
         pageload = "librarian/change_password.html"
         try:
             user = librarian.objects.get(username=username)
         except:
-            print('librarian not found')
+            messages.error(request,'librarian not found')
+            return render(request, pageload)
+    
+    elif desig == 'accountant':
+        username = request.session['acc_username']
+        pageload = "accountant/change_password.html"
+        try:
+            user = accountant.objects.get(username=username)
+        except:
+            messages.error(request, 'accountant not found')
             return render(request, pageload)
 
     if request.method == 'GET':
@@ -488,7 +503,7 @@ def change_pass(request, desig):
             else:
                 flag = 0
     if user.password == new_pass:
-        msg = 'old password and new pass word cannot be same'
+        msg = 'old password and new password cannot be same'
         flag = 1
     if flag == 1:
         context = {
@@ -513,15 +528,23 @@ def get_otp(request, desig):
             user = student.objects.get(enrollment=username)
         except:
             print('student not found')
-            return redirect('/change_password/student')
+            return redirect('/change_password/'+desig)
     
-    if desig == 'librarian':
+    elif desig == 'librarian':
         username = request.session['lib_username']
         try:
             user = librarian.objects.get(username=username)
         except:
-            print('librarian not found')
-            return render(request, 'change_password.html')
+            messages.error(request, 'librarian not found')
+            return redirect('/change_password/'+desig)
+    
+    elif desig == 'accountant':
+        username = request.session['acc_username']
+        try:
+            user = accountant.objects.get(username=username)
+        except:
+            messages.error(request, 'accountant not found')
+            return redirect('/change_password/'+desig)
         
     subject = 'noreply@libraryfeerefund.com'
     from_mail = settings.EMAIL_HOST_USER
@@ -758,3 +781,60 @@ def generate_report(request):
     
     else:
         return render(request, 'librarian/report.html') 
+
+
+def generate_report_accountant(request):
+    if not is_logged_in(request, "accountant"):
+        return redirect("/login/accountant")
+    if request.method == 'POST':
+        moye = request.POST.get('moye')
+        
+        if not re.match(r'\d{1,2}/\d{4}', moye):
+            messages.error(request, 'invalid input : '+moye)
+            return redirect('/report_accountant')
+        
+        month = int(moye.split("/")[0])
+        year = int(moye.split("/")[1])
+        
+        if month > 12 or month < 1:
+            messages.error(request, "invalid month {}".format(month))
+            return redirect("/report_accountant")
+
+        elif year < 2000:
+            messages.error(request, "year cannot be less than 2000")
+            return redirect('/report_accountant')
+        
+        elif (month > datetime.datetime.now().month and year == datetime.datetime.now().year) or year > datetime.datetime.now().year:
+            messages.error(request, "how can i generate future report of {}/{}".format(month, year))
+            return redirect('/report_accountant')
+        
+        data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="accepted")
+        total, temp = 0, 0
+        names, years, rollno, divisions = [],[],[],[]
+        if data.exists():
+            for i in data:
+                total += i.amount
+                stud = student.objects.get(enrollment = i.student_enrollment)
+                names.insert(temp, stud.name)
+                years.insert(temp, stud.batch_year)
+                rollno.insert(temp, stud.rollno)
+                divisions.insert(temp, stud.division)
+                temp+=1
+        else:
+            messages.info(request, 'we don\'t have data of '+moye)
+            return redirect('/report_accountant')
+        month = calendar.month_name[month]
+        context = {
+            'data':data,
+            'sum':total,
+            'month':month,
+            'year':year,
+            'names':names,
+            'years':years,
+            'rollno':rollno,
+            'divisions':divisions,
+        }
+        return render(request, 'accountant/report_accountant.html', context)
+    
+    else:
+        return render(request, 'accountant/report_accountant.html') 

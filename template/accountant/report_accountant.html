@@ -1,0 +1,79 @@
+{% extends 'accountant/index.html' %}
+{% block title %} - Accounting Reports{% endblock %}
+{% block content %}
+{% load custom_index %}
+
+
+{% if not data %}
+<div class="jumbotron vertical-center">
+<div class="col-md-4 container">
+        <form method="POST" action="/report_accountant">
+            {% csrf_token %}
+        <fieldset>							
+                
+            <div class="form-group">
+                <label class="col-form-label" for="inputDefault">Month and Year:</label>
+                    <input class="form-control" type="text" name="moye" placeholder="mm/yy" required autofocus>
+            </div>
+
+            <div>
+                <input type="submit" class="btn btn-primary" value="Get Report">
+            </div>
+                 
+         </fieldset>
+        </form>
+</div>
+</div>
+{% else %}
+    <div class="containter text-center">
+        <h4 class="mt-4 mb-4">
+            Report for {{ month }} - {{ year }}
+        </h4>
+        <table class="table table-striped">
+                <tbody>
+                    
+                  <tr>
+                    <th scope="row">Total Records</th>
+                    <td><b>{{ data.count }}</b></td>
+                    <th scope="row">Total Amount</th>
+                    <td><b>{{ sum }}</b></td>
+                  </tr>
+                  <tr>
+                    <th>Application No.</th>
+                    <th>Receipt No.</th>
+                    <th>Enrollment</th>
+                    <th>Name</th>
+                    <th>Division</th>
+                    <th>Roll No.</th>
+                    <th>Batch Year</th>
+                    <th>Date Requested</th>
+                    <th>Date Approved</th>
+                    <th>Amount</th>
+                </tr>
+                  {% for row in data %}
+                  <tr>
+                    <td>{{ row.application_no }}</td>
+                    <td>{{ row.receipt_no }}</td>
+                    <td>{{ row.student_enrollment }}</td>
+                    <td>{{names | index:forloop.counter0}}</td>
+                    <td>{{divisions | index:forloop.counter0}}</td>
+                    <td>{{rollno | index:forloop.counter0}}</td>
+                    <td>{{years | index:forloop.counter0}}</td>
+                    <td>{{ row.date.date }}</td>
+                    <td>{{ row.action_date.date }}</td>
+                    <td>{{ row.amount }}</td>
+                  </tr>
+                  
+                  {% endfor %}
+                </tbody>
+              </table>
+    </div>
+{% endif %}
+{% if messages %}
+<ul class="messages text-center">
+    {% for message in messages %}
+    <li {% if 'error' in message.tags %} style="color:red"{% else %}class="text-info"{% endif %}><b>{{ message }}</b></li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
