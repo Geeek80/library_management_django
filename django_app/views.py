@@ -76,7 +76,7 @@ def select_bbank(request,val):
             names += ", "+request.POST.get("book_{}_name".format(i)).strip()
             subjects += ", "+request.POST.get("book_{}_subject".format(i)).strip()
             authors += ", "+request.POST.get("book_{}_author".format(i)).strip()
-            msns += ", "+request.POST.get("book_{}_msn".format(i)).strip()
+            ssns += ", "+request.POST.get("book_{}_ssn".format(i)).strip()
         bb.subjects = subjects
         bb.semester = semester
         bb.books_names = names
@@ -98,26 +98,33 @@ def issue(request, val):
         return render(request, "librarian/issue.html")
     elif val == "select_books" or "save":
         enrollment = request.POST.get("enrollment", 0)
-        semester = int(request.POST.get("semester", 0))
     
     context = {
         "enrollment":enrollment,
-        "semester":semester,
     }
-    bank = book_bank.objects.filter(semester=semester)
-    stud = student.objects.filter(enrollment=enrollment)
-
-    if semester > 10 or semester < 1:
-        messages.error(request, "semester can not be greater than 10 or less than 1")
-        return render(request, "librarian/issue.html", context)
-    elif not bank.exists():
-        messages.error(request, "book bank for semester {} is not registered.".format(semester))
-        return render(request, "librarian/issue.html", context)
-    elif not stud.exists():
+    try:
+        stud = student.objects.get(enrollment=enrollment)
+    except:
         messages.error(request, "Student with enrollment {} not found.".format(enrollment))
         return render(request, "librarian/issue.html", context)
-    else:
-        context.update({"success":bank})
+
+    semester = stud.semester
+    stream = "mca" if stud.stream == "mca" else "imca"
+    try:
+        bank = book_bank.objects.get(semester=semester, stream=stream)
+    except:
+        messages.error(request, "book bank for {} sem {} is not registered.".format(stream, semester))
+        return render(request, "librarian/issue.html", context)
+    
+    subjects = bank.subjects.split(",")
+    books = bank.books_names.split(",")
+    authors = bank.books_authors.split(",")
+
+    context.update({
+        "success":subjects,
+        "books" : books,
+        "authors" : authors,
+        })
         
     return render(request, "librarian/issue.html", context)
 

@@ -28,7 +28,7 @@
             {% if pending_data %}
             <thead>
                 <tr class="table-primary">
-                    <th>Request No.</th>
+                    <th>Application No.</th>
                     <th>Enrollment No.</th>
                     <th>Request Date</th>
                     <th>Receipt No.</th>
@@ -40,7 +40,7 @@
             </thead>
             {% for req in pending_data %}
                 <tr class="table-secondary">
-                    <td class="text-center" style="color:black">{{req.id}}</td>
+                    <td class="text-center" style="color:black">{{req.application_no}}</td>
                     <td class="text-center" style="color:black">{{req.student_enrollment}}</td>
                     <td class="text-center" style="color:black">{{req.date}}</td>
                     <td class="text-center" style="color:black">{{req.receipt_no}}</td>
