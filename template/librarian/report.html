@@ -9,7 +9,12 @@
 <div class="col-md-4 container">
         <form method="POST" action="/report">
             {% csrf_token %}
-        <fieldset>							
+        <fieldset>
+          <div class="cointainer">
+              <h4 class="mt-4 mb-4">
+                  Report for Requests Approved
+              </h4>
+          </div>				
                 
             <div class="form-group">
                 <label class="col-form-label" for="inputDefault">Month and Year:</label>
@@ -27,7 +32,7 @@
 {% else %}
     <div class="containter text-center">
         <h4 class="mt-4 mb-4">
-            Report for {{ month }} - {{ year }}
+            Report for Requests Approved in {{ month }} - {{ year }}
         </h4>
         <table class="table table-striped">
                 <tbody>

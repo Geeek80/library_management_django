@@ -95,6 +95,10 @@
                         <th scope="row">Division</th>
                         <td>{{student.division}}</td>
                       </tr>
+                      <tr>
+                        <th scope="row">Additional Information</th>
+                        <td>{{data.additional_information}}</td>
+                      </tr>
                     {% if data.status != 'pending' %}
                       <tr>
                         <th scope="row">Status</th>
@@ -111,49 +115,54 @@
                     </tbody>
                   </table>
         <div class="containter w-75 text-center mt-5">
-        <div class="d-inline-block">
-            <h4>1. library fee receipt image : </h4>
-            {% if data.fee_receipt_image != '' %}
-            <a href="/image_view/{{ data.id }} fee_receipt">
-                <img src="{{ data.fee_receipt_image.url }}" class="img-fluid " width="500" alt="Receipt Image">
-            </a>
-            {% else %}
-                <p>not available</p>
-            {% endif %}
+        <div class="row mt-4">
+            <div class="col ml-5">
+                <h4 class="mb-4">1. library fee receipt image : </h4>
+                {% if data.fee_receipt_image != '' %}
+                <a href="/image_view/{{ data.id }} fee_receipt">
+                    <img src="{{ data.fee_receipt_image.url }}" class="img-fluid " width="500" height="500" alt="Receipt Image">
+                </a>
+                {% else %}
+                    <p>not available</p>
+                {% endif %}
+            </div>
+            <div class="col ml-5">
+                <h4 class="mb-4">2. Cancelled Cheque Image : </h4>
+                <a href="/image_view/{{ data.id }} cheque">
+                    <img src="{{ data.cancelled_cheque_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
+                </a>
+            </div>
         </div>
-        <div class=" d-inline-block">
-            <h4>2. Cancelled Cheque Image : </h4>
-            <a href="/image_view/{{ data.id }} cheque">
-                <img src="{{ data.cancelled_cheque_image.url }}" class="img-fluid" width="500" alt="Cancelled cheque Image">
-            </a>
+        <div class="row mt-4">
+            <div class="col ml-5">
+                <h4 class="mb-4">3. Passbook Front Page Image : </h4>
+                <a href="/image_view/{{ data.id }} passbook">
+                    <img src="{{ data.passbook_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
+                </a>
+            </div>
+            <div class="col ml-5">
+                <h4>4. Last Sem Fee Receipt Image : </h4>
+                {% if data.last_sem_fee_image != '' %}
+                <a href="/image_view/{{ data.id }} last_sem">
+                    <img src="{{ data.last_sem_fee_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
+                </a>
+                {% else %}
+                    <p>Not Available</p>
+                {% endif %}
+            </div>
         </div>
-        
-        <div class="d-inline-block">
-            <h4>3. Passbook Front Page Image : </h4>
-            <a href="/image_view/{{ data.id }} passbook">
-                <img src="{{ data.passbook_image.url }}" class="img-fluid" width="500" alt="Cancelled cheque Image">
-            </a>
-        </div>
-        <div class="d-inline-block">
-            <h4>4. Last Sem Fee Receipt Image : </h4>
-            {% if data.last_sem_fee_image != '' %}
-            <a href="/image_view/{{ data.id }} last_sem">
-                <img src="{{ data.last_sem_fee_image.url }}" class="img-fluid" width="500" alt="Cancelled cheque Image">
-            </a>
-            {% else %}
-                <p>Not Available</p>
-            {% endif %}
-        </div>
-        <div class="d-inline-block">
-            <h4>5. Grade History Image : </h4>
+        <div class="row mt-4">
+            <div class="col ml-5">
+            <h4 class="mb-4">5. Grade History Image : </h4>
             <a href="/image_view/{{ data.id }} grade">
-                <img src="{{ data.grade_history_image.url }}" class="img-fluid" width="500" alt="Cancelled cheque Image">
+                <img src="{{ data.grade_history_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
             </a>
+            </div>
         </div>
 
         {% if data.status == 'pending' %}
 
-        <div class="container d-inline-block text-center"> 
+        <div class="container d-inline-block text-center mt-4"> 
         <a href="/decide/{{ data.id }} approved"><button type="button" class="btn btn-success">Approve Request</button></a>
         <form {% if reason %} method="POST" action="/decide/{{ data.id }} rejected" {% endif %} class="d-inline-block ml-4 mt-2 mb-2">
         {% csrf_token %}

@@ -10,7 +10,9 @@
         <form method="POST" action="/report_accountant">
             {% csrf_token %}
         <fieldset>							
-                
+            <h4 class="mt-4 mb-4">
+                Report for Amount Paid
+            </h4>
             <div class="form-group">
                 <label class="col-form-label" for="inputDefault">Month and Year:</label>
                     <input class="form-control" type="text" name="moye" placeholder="mm/yy" required autofocus>
@@ -27,7 +29,7 @@
 {% else %}
     <div class="containter text-center">
         <h4 class="mt-4 mb-4">
-            Report for {{ month }} - {{ year }}
+            Report for Amount Paid in {{ month }} - {{ year }}
         </h4>
         <table class="table table-striped">
                 <tbody>

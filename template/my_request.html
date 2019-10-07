@@ -12,10 +12,56 @@
             {% endif %}
 
         {% if transaction_data is not None%}
-            <p> your request No. {{transaction_data.id}} status is : {{transaction_data.status}}</p>
-            {% if transaction_data.status == "rejected" %}
-                <a href="/request" ><button type="button" class="btn btn-outline-primary">Submit Request Again</button></a>
-            {% endif %}
+            
+            <table class="table table-striped mt-4">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Request Status</th>
+                            <td>
+                                {{transaction_data.status}}
+                                {% if transaction_data.status == "rejected" %}
+                                    <a href="/request" ><button type="button" class="btn btn-outline-primary ml-5">Submit Request Again</button></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if transaction_data.status != "pending" %}
+                            <tr>
+                                <th scope="row">{{transaction_data.status}} On Date</th>
+                                <td>{{transaction_data.action_date.date}}</td>
+                            </tr>
+                        {% endif %}
+                      <tr>
+                        <th scope="row">Application No.</th>
+                        <td>{{transaction_data.application_no}}</td>
+                        <th scope="row">Application Date</th>
+                        <td>{{transaction_data.date.date}}</td>
+                      </tr>
+                     
+                      <tr>
+                        <th scope="row">Receipt No.</th>
+                        <td>{% if transaction_data.receipt_no %} {{transaction_data.receipt_no}} {% else %} Not Available {% endif %}</td>
+                        <th scope="row">Receipt Date</th>
+                        <td>{% if transaction_data.receipt_date %} {{transaction_data.receipt_date.date}} {% else %} Not Available {% endif %}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Amount</th>
+                        <td>
+                            <div style="display: inline">
+                            {{transaction_data.amount}}
+                            </div>
+                        </td>
+                        <th scope="row">Additional Information</th>
+                        <td>{{transaction_data.additional_information}}</td>
+                      </tr>
+                    {% if transaction_data.status == 'rejected' %}
+                      <tr>
+                        <th scope="row">Reason</th>
+                        <td>{{transaction_data.reason}}</td>
+                      </tr>
+                    {% endif %}
+                    </tbody>
+                  </table>
+            
         {% else %}
             
             <h1 style="text-transform: capitalize">You don't have any requests yet!,<br>submit One below</h1>

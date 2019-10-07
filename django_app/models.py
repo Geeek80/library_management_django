@@ -51,7 +51,7 @@ class accountant(models.Model):
         db_table = 'accountant'
 
 
-class transaction(models.Model):
+class request_transaction(models.Model):
     date = models.DateTimeField(auto_now_add = True)
     receipt_no = models.IntegerField(null=True, blank=True)
     receipt_date = models.DateField(blank=True, null=True)
@@ -69,7 +69,7 @@ class transaction(models.Model):
     grade_history_image = models.FileField(upload_to="images/")
     
     class Meta:
-        db_table = "transaction"
+        db_table = "request_transaction"
 
 
 class counts(models.Model):

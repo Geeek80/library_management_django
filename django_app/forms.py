@@ -1,6 +1,6 @@
 import re, datetime
 from django import forms
-from django_app.models import mymodel, student, transaction, librarian, accountant
+from django_app.models import mymodel, student, request_transaction, librarian, accountant
 
 class employeeform(forms.ModelForm):
     class Meta:
@@ -92,7 +92,7 @@ class acc_login_form(forms.Form):
 
 class fee_request_form(forms.ModelForm):
     class Meta:
-        model = transaction
+        model = request_transaction
         fields = [
             'additional_information',
             'receipt_no',
@@ -184,7 +184,7 @@ class fee_request_form(forms.ModelForm):
     
     def clean_receipt_no(self, *arg, **kwargs):
         data = self.cleaned_data['receipt_no']
-        if transaction.objects.filter(receipt_no=data).exists():
+        if request_transaction.objects.filter(receipt_no=data).exists():
             self.fields['receipt_no'].widget.attrs.update({'autofocus': ''})
             raise forms.ValidationError('request with receipt number {} already exists'.format(data))
         return data

@@ -1,7 +1,7 @@
 import re, random, datetime, calendar
 from django.shortcuts import render, redirect
 from django_app.forms import employeeform, loginform, fee_request_form, libloginform, acc_login_form
-from django_app.models import (mymodel, student, transaction, librarian, counts, book_bank, accountant)
+from django_app.models import (mymodel, student, request_transaction, librarian, counts, book_bank, accountant)
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -283,7 +283,7 @@ def my_request(request):
     trans = None
     if 'enrollment' in request.session:
         try:
-            trans = transaction.objects.get(student_enrollment=request.session['enrollment'])
+            trans = request_transaction.objects.get(student_enrollment=request.session['enrollment'])
         except:
             pass
     return render(request, 'my_request.html', {'transaction_data':trans})
@@ -298,7 +298,7 @@ def requestt(request):
         enrollment = request.POST.get('student_enrollment')
         stud = student.objects.get(enrollment=enrollment)
         
-        trans = transaction.objects.filter(student_enrollment = enrollment, status = "rejected")
+        trans = request_transaction.objects.filter(student_enrollment = enrollment, status = "rejected")
         if trans.exists():
             trans.delete()
 
@@ -409,7 +409,7 @@ def otp_login(request, desig):
 def pending_request(request):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
-    pendings = transaction.objects.filter(status = 'pending')
+    pendings = request_transaction.objects.filter(status = 'pending')
     if not pendings.exists():
         pendings = None
     return render(request, "librarian/pending_request.html", {'pending_data':pendings})
@@ -418,7 +418,7 @@ def pending_request(request):
 def pending_request_accountant(request):
     if not is_logged_in(request, "accountant"):
         return redirect("/login/accountant")
-    pendings = transaction.objects.filter(status = 'approved')
+    pendings = request_transaction.objects.filter(status = 'approved')
     if not pendings.exists():
         pendings = None
     return render(request, "accountant/pending_request_accountant.html", {'pending_data':pendings})
@@ -426,7 +426,7 @@ def pending_request_accountant(request):
 def view_request(request, id):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
-    request_data = transaction.objects.get(id = id)
+    request_data = request_transaction.objects.get(id = id)
     student_data = student.objects.get(enrollment = request_data.student_enrollment)
     print(request_data.fee_receipt_image)
     return render(request, 'librarian/view_request.html', {'data':request_data, 'student':student_data})
@@ -617,7 +617,7 @@ def image_view(request, id):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
     id,typ = id.split()
-    data = transaction.objects.get(id=id)
+    data = request_transaction.objects.get(id=id)
     if typ == 'cheque':
         string = data.cancelled_cheque_image.url
     elif typ == 'fee_receipt':
@@ -634,7 +634,7 @@ def decide(request, id):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
     id,decision = id.split()
-    data = transaction.objects.get(id = id)
+    data = request_transaction.objects.get(id = id)
     student_data = student.objects.get(enrollment = data.student_enrollment)
         
     if decision == 'request':
@@ -673,7 +673,7 @@ def decide(request, id):
 def deduct(request, id):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
-    data = transaction.objects.get(id = id)
+    data = request_transaction.objects.get(id = id)
     try:
         student_data = student.objects.get(enrollment = data.student_enrollment)
     except:
@@ -681,6 +681,11 @@ def deduct(request, id):
     if request.method == 'POST':
         deduct = int(request.POST.get('outstanding', 0))
         reason = request.POST.get('out_reason', "")
+        
+        if deduct > data.amount:
+            messages.error(request, "you can not deduct amount more than {}".format(data.amount))
+            return redirect('/view_request/'+id)
+
         if deduct > 0 and reason != "":
             data.amount -= deduct
             data.save()
@@ -699,6 +704,9 @@ def deduct(request, id):
                 info += ' mail not sent to '+student_data.name+' due to some problem'
             messages.info(request, info)
             return redirect('/view_request/'+id)
+        else:
+            messages.error(request, "deduct amount can not be negative and reason can not be empty")
+            return redirect("/view_request/"+id)
     else:
         context = {
             'data':data,
@@ -758,7 +766,7 @@ def generate_report(request):
             messages.error(request, "how can i generate future report of {}/{}".format(month, year))
             return redirect('/report')
         
-        data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
+        data = request_transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
         total, temp = 0, 0
         names, years, rollno, divisions = [],[],[],[]
         if data.exists():
@@ -815,7 +823,7 @@ def generate_report_accountant(request):
             messages.error(request, "how can i generate future report of {}/{}".format(month, year))
             return redirect('/report_accountant')
         
-        data = transaction.objects.filter(action_date__month= month, action_date__year = year, status="accepted")
+        data = request_transaction.objects.filter(action_date__month= month, action_date__year = year, status="accepted")
         total, temp = 0, 0
         names, years, rollno, divisions = [],[],[],[]
         if data.exists():
