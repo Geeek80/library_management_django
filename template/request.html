@@ -5,6 +5,28 @@
         <div class="container align-items-center">
             <h2 class="text-center mb-3">Application For Refund of Library Deposit</h2>
                 <div class="col-md-12 h-75">
+                        <div class="container">
+                                <div style="color:red;text-transform: capitalize;">
+                                    <ul>
+                                        <li>
+                                            <span style="color:black;">fields marked with <span style="color:red;font-size: 21px;">*</span> are compulsory </span>        
+                                        </li>
+                                        <li>
+                                            <span style="color:black;">for student grade history refer GTU site.            
+                                        </li>
+                                        <li>
+                                            if you don't have library fee receipt fine of 100 rs. will be charged.            
+                                        </li>
+                                        <li>
+                                            if you don't have last sem fee receipt fine of 100 rs. will be charged.            
+                                        </li>
+                                        
+                                        <li>
+                                            if you Have any BookBank Books pending Price of Book will be Deducted from library fee amount.            
+                                        </li>
+                                    </ul>
+                                </div>
+                        </div>
                 <fieldset>
                     <form action="/request/" enctype="multipart/form-data" method="POST">
                         {% csrf_token %}
@@ -97,9 +119,9 @@
                             </div>
                             <div class="col">
                                     {% if messages %}
-                                    <ul class="messages" style="color:red;">
+                                    <ul style="color:red;">
                                         {% for message in messages %}
-                                        <li class="text-info"><b>{{ message }}</b></li>
+                                            <li><b>{{ message }}</b></li>
                                         {% endfor %}
                                     </ul>
                                     {% endif %}
@@ -108,24 +130,7 @@
                     </div>
                     </form>
                 </fieldset>
-                <div class="container">
-                <div style="color:red;text-transform: capitalize;">
-                    <ul>
-                        <li>
-                            <span style="color:black;">fields marked with <span style="color:red;font-size: 21px;">*</span> are compulsory </span>        
-                        </li>
-                        <li>
-                            <span style="color:black;">for student grade history refer GTU site.            
-                        </li>
-                        <li>
-                            if you don't have library fee receipt fine of 100 rs. will be charged.            
-                        </li>
-                        <li>
-                            if you don't have last sem fee receipt fine of 100 rs. will be charged.            
-                        </li>
-                    </ul>
-                </div>
-                </div>
+                
             </div>
         </div>
     </div>

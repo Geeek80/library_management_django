@@ -59,8 +59,20 @@ class studentadmin(admin.ModelAdmin):
         self.message_user(request, 'the data has been uploaded')
         return HttpResponseRedirect('./')
 
+
+class request_transaction_admin(admin.ModelAdmin):
+    list_display = [
+        'application_no',
+        'student_enrollment',
+        'status',
+        'action_date'
+        ]
+    list_filter = ('status',)
+    search_fields = ('student_enrollment', 'application_no', 'receipt_no')
+
+
 # Register your models here.
 admin.site.register(mymodel)
-admin.site.register(request_transaction)
+admin.site.register(request_transaction, request_transaction_admin)
 admin.site.register(student, studentadmin)
 admin.site.register(book_bank)

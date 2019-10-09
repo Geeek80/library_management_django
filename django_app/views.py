@@ -1,7 +1,7 @@
 import re, random, datetime, calendar
 from django.shortcuts import render, redirect
 from django_app.forms import employeeform, loginform, fee_request_form, libloginform, acc_login_form
-from django_app.models import (mymodel, student, request_transaction, librarian, counts, book_bank, accountant)
+from django_app.models import (mymodel, student, request_transaction, librarian, counts, book_bank, accountant, book_bank_transaction)
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -57,7 +57,7 @@ def select_bbank(request,val):
         "stream":stream,
     }
     
-    if not check_sem_books(request, semester, num):
+    if not check_sem_books(request, semester, num, stream):
         return render(request, "librarian/select_bbank.html", context)
     elif not check_stream(request, stream):
         return render(request, "librarian/select_bbank.html", context)
@@ -72,14 +72,17 @@ def select_bbank(request,val):
         subjects = request.POST.get("book_1_subject").strip()
         authors = request.POST.get("book_1_author").strip()
         ssns = request.POST.get("book_1_ssn").strip()
+        prices = request.POST.get("book_1_price").strip()
         for i in range(2, num+1):
             names += ", "+request.POST.get("book_{}_name".format(i)).strip()
             subjects += ", "+request.POST.get("book_{}_subject".format(i)).strip()
             authors += ", "+request.POST.get("book_{}_author".format(i)).strip()
             ssns += ", "+request.POST.get("book_{}_ssn".format(i)).strip()
+            prices += ", "+request.POST.get("book_{}_price".format(i)).strip()
         bb.subjects = subjects
         bb.semester = semester
         bb.books_names = names
+        bb.books_prices = prices
         bb.books_authors = authors
         bb.books_ssn_numbers = ssns
         bb.stream = stream
@@ -116,21 +119,83 @@ def issue(request, val):
         messages.error(request, "book bank for {} sem {} is not registered.".format(stream, semester))
         return render(request, "librarian/issue.html", context)
     
-    subjects = bank.subjects.split(",")
-    books = bank.books_names.split(",")
-    authors = bank.books_authors.split(",")
+    already = book_bank_transaction.objects.filter(studentt_id=stud.id)
+    
+    subjects = make_list(bank.subjects)
+    books = make_list(bank.books_names)
+    authors = make_list(bank.books_authors)
+    prices = make_list(bank.books_prices)
+
+    if already.exists():
+        if same(bank.subjects, already[0].books):
+            messages.error(request, "Book Bank to this Student : {} already issued.".format(enrollment))
+            return render(request, "librarian/issue.html", context)
+        else:
+            taken_books = make_list(already[0].books)
+            not_taken = []
+            p = []
+            for i in subjects:
+                if i not in taken_books:
+                    not_taken.append(i)
+                    p.append( prices[ subjects.index(i)])
+            subjects = not_taken
+            prices = p
 
     context.update({
         "success":subjects,
         "books" : books,
         "authors" : authors,
         })
-        
+    
+    if val == "save":
+        selected = ""
+        pri = ""
+        for i in range(4):
+            book = request.POST.get("book{}".format(i), None)
+            if book:
+                book = book.strip()
+                selected += "{}, ".format(book)
+                pri += "{}, ".format(prices[ subjects.index(book) ])
+        if already.exists():
+            already = book_bank_transaction.objects.get(studentt_id=stud.id)
+            already.books += selected
+            already.prices += pri
+            print(already.books)
+            already.save()
+        else:
+            trans = book_bank_transaction()
+            trans.studentt = stud
+            trans.bookbank = bank
+            trans.books = selected
+            trans.prices = pri
+            trans.save()
+        messages.info(request, "bookbank issued to student {}".format(stud.name))
+        return redirect('/book_bank')
     return render(request, "librarian/issue.html", context)
 
-def check_sem_books(request, semester, num):
-    if semester > 10 or semester < 1:
-        messages.error(request, "semester can not be greater than 10 or less than 1")
+def same(string, string2):
+    list1 = string.split(",")
+    list2 = string2.split(",")
+    list1 = [i.strip()for i in list1]
+    list2 = [i.strip()for i in list2]
+    for i in list1:
+        if i != "":
+            if i not in list2:
+                return False
+    return True
+
+def make_list(string):
+    list1 = string.split(",")
+    list1 = [i.strip() for i in list1]
+    if "" in list1:
+        list1.remove("")
+    return list1
+
+def check_sem_books(request, semester, num, stream):
+    if stream == "mca" and (semester > 5 or semester < 1):
+        messages.error(request, "mca semester can not be greater than 5 or less than 1")
+    elif stream == "imca" and semester > 9 or semester < 1:
+        messages.error(request, "integrated mca semester can not be greater than 9 or less than 1")
         return False
     elif num > 4 or num < 1:
         messages.error(request, "number of books can not be greater than 4 or less than 1")
@@ -298,6 +363,9 @@ def requestt(request):
         enrollment = request.POST.get('student_enrollment')
         stud = student.objects.get(enrollment=enrollment)
         
+        # print(bb.exists())
+        # return redirect("/")
+        
         trans = request_transaction.objects.filter(student_enrollment = enrollment, status = "rejected")
         if trans.exists():
             trans.delete()
@@ -308,8 +376,21 @@ def requestt(request):
             
             if 'fee_receipt_image' not in request.FILES:
                 newform.amount -= 100
+                messages.info(request, "100rs. has been deducted for library fee receipt")
             if 'last_sem_fee_image' not in request.FILES:
+                messages.info(request, "100rs. has been deducted for last sem fee receipt")
                 newform.amount -= 100
+            
+            bbt = book_bank_transaction.objects.filter(studentt = stud.id)
+            if bbt.exists():
+                books = bbt[0].books.split(",")
+                books = [i.strip() for i in books]
+                ded = 0
+                for i in make_list(bbt[0].prices):
+                    ded += int(i.strip())
+                newform.amount -= ded
+                messages.info(request, 'total amount of {} is been deducted for books : {} not returned'.format(ded, bbt[0].books))
+            
 
             stream = stud.stream
             count_obj = counts.objects.get(id=1)
@@ -455,7 +536,7 @@ def is_logged_in(request, desig, disp_msg=True):
 
 def change_pass(request, desig):
     if not is_logged_in(request, desig):
-            return redirect("/login/"+desig)
+        return redirect("/login/"+desig)
 
     if desig == 'student':
         username = request.session['enrollment']

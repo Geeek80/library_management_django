@@ -86,7 +86,16 @@ class book_bank(models.Model):
     books_names = models.CharField(max_length=200)
     books_ssn_numbers = models.CharField(max_length=40)
     books_authors = models.CharField(max_length=100)
+    books_prices = models.CharField(max_length=30)
     class Meta:
         db_table = "book_bank"
         unique_together = (('stream', 'calendar', 'semester'),)
+
+class book_bank_transaction(models.Model):
+    studentt = models.ForeignKey(student, on_delete=models.CASCADE)
+    bookbank = models.ForeignKey(book_bank, on_delete=models.CASCADE)
+    books = models.CharField(max_length=500)
+    prices = models.CharField(max_length=50)
+    class Meta:
+        db_table = "book_bank_transaction"
     

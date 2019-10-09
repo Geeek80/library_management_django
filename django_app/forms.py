@@ -184,7 +184,8 @@ class fee_request_form(forms.ModelForm):
     
     def clean_receipt_no(self, *arg, **kwargs):
         data = self.cleaned_data['receipt_no']
-        if request_transaction.objects.filter(receipt_no=data).exists():
-            self.fields['receipt_no'].widget.attrs.update({'autofocus': ''})
-            raise forms.ValidationError('request with receipt number {} already exists'.format(data))
+        if data is not None:
+            if request_transaction.objects.filter(receipt_no=data).exists():
+                self.fields['receipt_no'].widget.attrs.update({'autofocus': ''})
+                raise forms.ValidationError('request with receipt number {} already exists'.format(data))
         return data

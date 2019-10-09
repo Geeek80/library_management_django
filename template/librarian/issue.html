@@ -23,7 +23,12 @@
                                 {% if success %}
                                 <h3 class="mb-4">Select Books</h3>
                                 {% for book in success %}
-                                    <li>{{book}}</li>
+
+                                <div class="custom-control custom-checkbox mb-2">
+                                    <input type="checkbox" class="custom-control-input" name="book{{forloop.counter0}}" value="{{book}}" id="book{{forloop.counter0}}" checked>
+                                    <label class="custom-control-label" for="book{{forloop.counter0}}">{{book}}</label>
+                                </div>
+
                                 {% endfor %}
                                 {% endif %}
                             </div>
