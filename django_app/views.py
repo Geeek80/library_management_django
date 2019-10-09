@@ -73,12 +73,17 @@ def select_bbank(request,val):
         authors = request.POST.get("book_1_author").strip()
         ssns = request.POST.get("book_1_ssn").strip()
         prices = request.POST.get("book_1_price").strip()
+        
         for i in range(2, num+1):
             names += ", "+request.POST.get("book_{}_name".format(i)).strip()
             subjects += ", "+request.POST.get("book_{}_subject".format(i)).strip()
             authors += ", "+request.POST.get("book_{}_author".format(i)).strip()
             ssns += ", "+request.POST.get("book_{}_ssn".format(i)).strip()
             prices += ", "+request.POST.get("book_{}_price".format(i)).strip()
+        for price in prices:
+            if int(price) < 40:
+                messages.error(request, "price can not be less than 40 rs.")
+                return redirect("/select_bbank")
         bb.subjects = subjects
         bb.semester = semester
         bb.books_names = names
@@ -172,6 +177,72 @@ def issue(request, val):
         messages.info(request, "bookbank issued to student {}".format(stud.name))
         return redirect('/book_bank')
     return render(request, "librarian/issue.html", context)
+
+def book_bank_return(request, val):
+    if not is_logged_in(request, "librarian"):
+        return redirect("/login/librarian")
+    if request.method == "GET":
+        return render(request, "librarian/return.html")
+    elif val == "select_books" or "save":
+        enrollment = request.POST.get("enrollment", 0)
+    
+    context = {
+        "enrollment":enrollment,
+    }
+    try:
+        stud = student.objects.get(enrollment=enrollment)
+    except:
+        messages.error(request, "Student with enrollment {} not found.".format(enrollment))
+        return render(request, "librarian/return.html", context)
+    try:
+        already = book_bank_transaction.objects.get(studentt_id=stud.id)
+    except:
+        messages.error(request, "Student don't have any book pending".format(enrollment))
+        return render(request, "librarian/return.html", context)
+
+    taken_books = make_list(already.books)
+    
+    # for i in subjects:
+    #     if i not in taken_books:
+    #         not_taken.append(i)
+    #         p.append( prices[ subjects.index(i)])
+    # subjects = not_taken
+    # prices = p
+
+    context.update({
+        "success":taken_books,
+        })
+    
+    if val == "save":
+        selected = ""
+        pri = ""
+        for i in range(4):
+            book = request.POST.get("book{}".format(i), None)
+            if book:
+                book = book.strip()
+                selected += "{}, ".format(book)
+
+        selected = make_list(selected)
+        prices = make_list(already.prices)
+
+        not_returned = ""
+        for i in taken_books:
+            if i not in selected:
+                not_returned += "{}, ".format(i)
+                pri += "{}, ".format(prices[ taken_books.index(i) ])
+
+        # print(not_returned, pri)
+        # return redirect("/")
+        if not_returned.strip() == "":
+            already.delete()
+        else:
+            already.books = not_returned
+            already.prices = pri
+            already.save()
+
+        messages.info(request, "books returned successfully")
+        return redirect('/book_bank')
+    return render(request, "librarian/return.html", context)
 
 def same(string, string2):
     list1 = string.split(",")

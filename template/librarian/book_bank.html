@@ -15,20 +15,21 @@
                                 <div class="col-md-5 text-center">
                                         <a href="/select_bbank/anything"><button type="button" class="btn btn-outline-primary">Register BookBank</button></a>
                                         <a href="/issue/a"><button type="button" class="btn btn-outline-primary ml-4">Issue</button></a>                       
-                                </div>
-                                <div class="col">
-                                    {% if messages %}
-                                    <ul class="messages">
-                                        {% for message in messages %}
-                                        <li {%if 'error' in message.tags %}style="color:red;"{%else%}class="text-info"{%endif%}><b>{{ message }}</b></li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% endif %}
+                                        <a href="/return/a"><button type="button" class="btn btn-outline-primary ml-4">Return</button></a>                       
                                 </div>
                             </div>
                         </div>
-
+                        
                         <div class="containter mt-5">
+                            <div class="col">
+                                {% if messages %}
+                                <ul class="messages">
+                                    {% for message in messages %}
+                                    <li {%if 'error' in message.tags %}style="color:red;"{%else%}class="text-info"{%endif%}><b>{{ message }}</b></li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
                                 {% if bookbank %}
                                 <h3 class="mb-4">Registered BookBanks</h3>
                                 {% for bb in bookbank %}
