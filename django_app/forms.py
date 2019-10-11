@@ -129,7 +129,8 @@ class fee_request_form(forms.ModelForm):
             'amount' : forms.NumberInput(
                 attrs = {
                     "class":"form-control",
-                    "placeholder":"Library Fee Amount"
+                    "placeholder":"Library Fee Amount",
+                    "value":3000
                     }
                 ),
             'student_enrollment' : forms.TextInput(

@@ -6,13 +6,13 @@
 
 {% if not data %}
 <div class="jumbotron vertical-center">
-<div class="col-md-4 container">
+<div class="col-md-5 container">
         <form method="POST" action="/report">
             {% csrf_token %}
         <fieldset>
-          <div class="cointainer">
-              <h4 class="mt-4 mb-4">
-                  Report for Requests Approved
+          <div class="cointainer w-100">
+              <h4 class="w-100 mt-4 mb-4">
+                  Report for Requests Approved by Librarian
               </h4>
           </div>				
                 
@@ -32,7 +32,7 @@
 {% else %}
     <div class="containter text-center">
         <h4 class="mt-4 mb-4">
-            Report for Requests Approved in {{ month }} - {{ year }}
+            Report for Requests Approved in {{ month }} - {{ year }} by Librarian
         </h4>
         <table class="table table-striped">
                 <tbody>

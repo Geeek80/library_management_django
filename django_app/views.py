@@ -95,7 +95,7 @@ def select_bbank(request,val):
         bb.calendar = calendar
         bb.save()
 
-        messages.info(request, "the book bank for semester {} have been saved".format(semester))
+        messages.info(request, "the book bank for {} sem {} have been saved".format(stream, semester))
         return redirect("/book_bank")
     context.update({"books":range(1,num+1)})
     return render(request, "librarian/select_bbank.html", context)
@@ -266,6 +266,7 @@ def make_list(string):
 def check_sem_books(request, semester, num, stream):
     if stream == "mca" and (semester > 5 or semester < 1):
         messages.error(request, "mca semester can not be greater than 5 or less than 1")
+        return False
     elif stream == "imca" and semester > 9 or semester < 1:
         messages.error(request, "integrated mca semester can not be greater than 9 or less than 1")
         return False
@@ -651,6 +652,14 @@ def change_pass(request, desig):
     confirm = request.POST.get('cnf_pass', None)
     pas = request.POST.get('old_pass', None)
 
+    if len(new_pass) < 4 or len(new_pass) > 21:
+        msg = 'new password length should be greater than 3 and less than 21'
+        context = {
+            'error_match': msg,
+            'desig':desig
+        }
+        return render(request, pageload, context)
+    
     if new_pass != confirm:
         msg = 'new password and confirm password didn\'t match'
         context = {
@@ -773,21 +782,38 @@ def set_pass(request, desig):
     return redirect(redir)
 
 def image_view(request, id):
-    if not is_logged_in(request, "librarian"):
-        return redirect("/login/librarian")
-    id,typ = id.split()
+    id, typ, desig = id.split()
+
+    if desig == "librarian":
+        page = 'librarian/image_view.html'
+    
+    if desig == "accountant":
+        page = 'accountant/image_view.html'
+
+    if not is_logged_in(request, desig):
+        return redirect("/login/"+desig)
+
     data = request_transaction.objects.get(id=id)
     if typ == 'cheque':
         string = data.cancelled_cheque_image.url
+        heading = "Cancelled Cheque Image"
     elif typ == 'fee_receipt':
         string = data.fee_receipt_image.url
+        heading = "Library Fee Receipt Image"
     elif typ == 'passbook':
         string = data.passbook_image.url
+        heading = "PassBook Front Page Image"
     elif typ == 'last_sem':
         string = data.last_sem_fee_image.url
+        heading = "Last Semester Fee Receipt Image"
     elif typ == 'grade':
         string = data.grade_history_image.url
-    return render(request, 'librarian/image_view.html', {'source':string})
+        heading = "Grade History Image"
+    context = {
+        'source':string,
+        'heading':heading
+        }
+    return render(request, page, context)
 
 def decide(request, id):
     if not is_logged_in(request, "librarian"):

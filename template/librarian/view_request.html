@@ -120,7 +120,7 @@
             <div class="col ml-5">
                 <h4 class="mb-4">1. library fee receipt image : </h4>
                 {% if data.fee_receipt_image != '' %}
-                <a href="/image_view/{{ data.id }} fee_receipt">
+                <a href="/image_view/{{ data.id }} fee_receipt librarian">
                     <img src="{{ data.fee_receipt_image.url }}" class="img-fluid " width="500" height="500" alt="Receipt Image">
                 </a>
                 {% else %}
@@ -129,7 +129,7 @@
             </div>
             <div class="col ml-5">
                 <h4 class="mb-4">2. Cancelled Cheque Image : </h4>
-                <a href="/image_view/{{ data.id }} cheque">
+                <a href="/image_view/{{ data.id }} cheque librarian">
                     <img src="{{ data.cancelled_cheque_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
                 </a>
             </div>
@@ -137,14 +137,14 @@
         <div class="row mt-4">
             <div class="col ml-5">
                 <h4 class="mb-4">3. Passbook Front Page Image : </h4>
-                <a href="/image_view/{{ data.id }} passbook">
+                <a href="/image_view/{{ data.id }} passbook librarian">
                     <img src="{{ data.passbook_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
                 </a>
             </div>
             <div class="col ml-5">
                 <h4>4. Last Sem Fee Receipt Image : </h4>
                 {% if data.last_sem_fee_image != '' %}
-                <a href="/image_view/{{ data.id }} last_sem">
+                <a href="/image_view/{{ data.id }} last_sem librarian">
                     <img src="{{ data.last_sem_fee_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
                 </a>
                 {% else %}
@@ -155,7 +155,7 @@
         <div class="row mt-4">
             <div class="col ml-5">
             <h4 class="mb-4">5. Grade History Image : </h4>
-            <a href="/image_view/{{ data.id }} grade">
+            <a href="/image_view/{{ data.id }} grade librarian">
                 <img src="{{ data.grade_history_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
             </a>
             </div>

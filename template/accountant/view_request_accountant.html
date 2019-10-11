@@ -120,7 +120,7 @@
             <div class="col ml-5">
                 <h4 class="mb-4">1. library fee receipt image : </h4>
                 {% if data.fee_receipt_image != '' %}
-                <a href="/image_view/{{ data.id }} fee_receipt">
+                <a href="/image_view/{{ data.id }} fee_receipt accountant">
                     <img src="{{ data.fee_receipt_image.url }}" class="img-fluid " width="500" height="500" alt="Receipt Image">
                 </a>
                 {% else %}
@@ -129,7 +129,7 @@
             </div>
             <div class="col ml-5">
                 <h4 class="mb-4">2. Cancelled Cheque Image : </h4>
-                <a href="/image_view/{{ data.id }} cheque">
+                <a href="/image_view/{{ data.id }} cheque accountant">
                     <img src="{{ data.cancelled_cheque_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
                 </a>
             </div>
@@ -137,7 +137,7 @@
         <div class="row mt-4">
             <div class="col ml-5">
                 <h4 class="mb-4">3. Passbook Front Page Image : </h4>
-                <a href="/image_view/{{ data.id }} passbook">
+                <a href="/image_view/{{ data.id }} passbook accountant">
                     <img src="{{ data.passbook_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
                 </a>
             </div>
