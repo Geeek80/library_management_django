@@ -9,9 +9,9 @@
                 {% if messages %}
                 {% for message in messages %}
                 <div class="card text-white {% if 'error' in message.tags %} bg-danger {% else %} bg-info {% endif %} mb-3" style="max-width: 20rem;">
-                    <div class="card-header">{% if 'error' in message.tags %} Rejected {% else %} Approved {% endif %}</div>
+                    <div class="card-header">{% if 'error' in message.tags %} Rejected {% else %} Accepted {% endif %}</div>
                     <div class="card-body">
-                        <h4 class="card-title">Request {% if 'error' in message.tags %} Rejected {% else %} Approved {% endif %}</h4>
+                        <h4 class="card-title">Request {% if 'error' in message.tags %} Rejected {% else %} Accepted {% endif %}</h4>
                         <p class="card-text">
                             <ul class="messages">
                                     {{ message }}

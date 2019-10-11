@@ -80,7 +80,8 @@ def select_bbank(request,val):
             authors += ", "+request.POST.get("book_{}_author".format(i)).strip()
             ssns += ", "+request.POST.get("book_{}_ssn".format(i)).strip()
             prices += ", "+request.POST.get("book_{}_price".format(i)).strip()
-        for price in prices:
+        pricess = make_list(prices)
+        for price in pricess:
             if int(price) < 40:
                 messages.error(request, "price can not be less than 40 rs.")
                 return redirect("/select_bbank")
@@ -580,8 +581,14 @@ def view_request(request, id):
         return redirect("/login/librarian")
     request_data = request_transaction.objects.get(id = id)
     student_data = student.objects.get(enrollment = request_data.student_enrollment)
-    print(request_data.fee_receipt_image)
     return render(request, 'librarian/view_request.html', {'data':request_data, 'student':student_data})
+
+def view_request_accountant(request, id):
+    if not is_logged_in(request, "accountant"):
+        return redirect("/login/accountant")
+    request_data = request_transaction.objects.get(id = id)
+    student_data = student.objects.get(enrollment = request_data.student_enrollment)
+    return render(request, 'accountant/view_request_accountant.html', {'data':request_data, 'student':student_data})
 
 def clean(request):
     for key in list(request.session.keys()):
@@ -822,9 +829,60 @@ def decide(request, id):
             messages.error(request, msg)
         return redirect('/pending_request')
 
+def decide_acc(request, id):
+    if not is_logged_in(request, "accountant"):
+        return redirect("/login/accountant")
+    id,decision = id.split()
+    data = request_transaction.objects.get(id = id)
+    student_data = student.objects.get(enrollment = data.student_enrollment)
+        
+    if decision == 'request_acc':
+        return render(request, 'accountant/view_request_accountant.html', {'data':data, 'student':student_data, 'reason':True})
+    else:
+        data.status = decision
+        if decision == 'accepted':
+            msg = 'request no '+id+' Documents verified, request '+decision
+            typ = "info"
+            body = 'your request for library fee refund has been '+decision+' by accountant \nAmount of Rs.'+str(data.amount)+' will be transfered to your account soon\ncontact library for more details'
+        elif decision == 'rejectedd':
+            reason = request.POST.get('reason', '')
+            if data.reason is None:
+                data.reason = ""
+            data.reason += '\n'+reason
+            msg = 'request no '+id+' is '+decision+' by accountant because, '+reason
+            typ = "error"
+            body = 'your request for library fee refund has been '+decision+' by accountant\n because, '+reason+'\ncontact library for more details'
+        data.action_date = datetime.datetime.now()
+        data.save()
+        
+        subject = 'noreply@libraryfeerefund.com'
+        from_mail = settings.EMAIL_HOST_USER
+        to_mail = [student_data.email]
+        try:
+            send_mail(subject, msg, from_mail, to_mail, fail_silently=False)
+            msg += ' the mail has been sent to '+student_data.name
+        except:
+            msg += ' mail not sent to '+student_data.name+' due to some problem'
+        if typ == "info":
+            messages.info(request, msg)
+        elif typ == "error":
+            messages.error(request, msg)
+        return redirect('/pending_request_accountant')
+
 def deduct(request, id):
-    if not is_logged_in(request, "librarian"):
-        return redirect("/login/librarian")
+    id, desig = id.split()
+    
+    if not is_logged_in(request, desig):
+        return redirect("/login/"+desig)
+    
+    if desig == "accountant":
+        redir = '/view_request_accountant/'+id
+        page = 'accountant/view_request_accountant.html'
+    
+    elif desig == "librarian":
+        redir = '/view_request/'+id
+        page = 'librarian/view_request.html'
+
     data = request_transaction.objects.get(id = id)
     try:
         student_data = student.objects.get(enrollment = data.student_enrollment)
@@ -836,12 +894,12 @@ def deduct(request, id):
         
         if deduct > data.amount:
             messages.error(request, "you can not deduct amount more than {}".format(data.amount))
-            return redirect('/view_request/'+id)
+            return redirect(redir)
 
         if deduct > 0 and reason != "":
             data.amount -= deduct
             data.save()
-            info = 'the charges have been deducted from amount because, '+reason
+            info = 'the charges have been deducted from amount by {} because, '.format(desig)+reason
             
             data.reason = reason
             msg = 'amout of Rs.'+str(deduct)+' has been deducted from your library fee refund because, '+reason+', contact library for more details'
@@ -855,17 +913,17 @@ def deduct(request, id):
             except:
                 info += ' mail not sent to '+student_data.name+' due to some problem'
             messages.info(request, info)
-            return redirect('/view_request/'+id)
+            return redirect(redir)
         else:
             messages.error(request, "deduct amount can not be negative and reason can not be empty")
-            return redirect("/view_request/"+id)
+            return redirect(redir)
     else:
         context = {
             'data':data,
             'student':student_data,
             'deduct':request.GET.get('outstanding')
         }
-        return render(request, 'librarian/view_request.html', context)
+        return render(request, page, context)
 
 def pagi(request, data, context_name, context):
     pagination = Paginator(data, 5)

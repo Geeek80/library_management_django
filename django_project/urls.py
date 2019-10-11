@@ -47,6 +47,8 @@ urlpatterns = [
     path('acc_home', acc_homepage),
     path('report_accountant', generate_report_accountant),
     path('pending_request_accountant', pending_request_accountant),
+    path('view_request_accountant/<int:id>', view_request_accountant),
+    path('decide_acc/<str:id>', decide_acc),
 
     # for all
     path('', login),

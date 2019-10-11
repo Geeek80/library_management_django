@@ -1,7 +1,7 @@
-{% extends 'librarian/index.html' %}
+{% extends 'accountant/index.html' %}
 
 {% block title %}
-    - View Request
+    - View Request Accountant
 {% endblock %}
 
 {% block content %}
@@ -15,11 +15,11 @@
             </ul>
             {% endif %}
         
-        {% if data.status == 'pending' %}
+        {% if data.status == 'approved' %}
         
         <div class="container d-inline-block text-center"> 
-            <a href="/decide/{{ data.id }} approved"><button type="button" class="btn btn-success">Approve Request</button></a>
-            <form {% if reason %} method="POST" action="/decide/{{ data.id }} rejected" {% endif %} class="d-inline-block ml-4 mt-2 mb-2">
+            <a href="/decide_acc/{{ data.id }} accepted"><button type="button" class="btn btn-success">Accept Request</button></a>
+            <form {% if reason %} method="POST" action="/decide_acc/{{ data.id }} rejectedd" {% endif %} class="d-inline-block ml-4 mt-2 mb-2">
             {% csrf_token %}
             {% if reason %}
             <div class="form-group has-danger">
@@ -30,7 +30,7 @@
             {% endif %}
             
             {% if not reason %} 
-                <a href="/decide/{{ data.id }} request">
+                <a href="/decide_acc/{{ data.id }} request_acc">
             {% endif %}
                 <button {% if reason %} type="submit" {% else %} type="button" {% endif %} class="btn btn-danger">Reject Request</button>
             {% if not reason %} </a>{% endif %} 
@@ -58,7 +58,7 @@
                             <div style="display: inline">
                             {{data.amount}}
                             </div>
-                                <form {% if deduct %} method="POST" {%endif%} action='/deduct/{{data.id}} librarian' style="display: inline; overflow: hidden;">
+                                <form {% if deduct %} method="POST" {%endif%} action='/deduct/{{data.id}} accountant' style="display: inline; overflow: hidden;">
                                     {% csrf_token %}
                                     <div class="form-group has-danger col " style="display: inline; overflow: hidden;">
                                         <input type="number" name="outstanding" value="{{deduct}}" placeholder="- Any OutStanding" style="display: inline; overflow: hidden;"class="form-control-sm form-control is-invalid col-md-3" required>
@@ -141,31 +141,13 @@
                     <img src="{{ data.passbook_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
                 </a>
             </div>
-            <div class="col ml-5">
-                <h4>4. Last Sem Fee Receipt Image : </h4>
-                {% if data.last_sem_fee_image != '' %}
-                <a href="/image_view/{{ data.id }} last_sem">
-                    <img src="{{ data.last_sem_fee_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
-                </a>
-                {% else %}
-                    <p>Not Available</p>
-                {% endif %}
-            </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col ml-5">
-            <h4 class="mb-4">5. Grade History Image : </h4>
-            <a href="/image_view/{{ data.id }} grade">
-                <img src="{{ data.grade_history_image.url }}" class="img-fluid" width="500" height="500" alt="Cancelled cheque Image">
-            </a>
-            </div>
         </div>
 
-        {% if data.status == 'pending' %}
+        {% if data.status == 'approved' %}
 
         <div class="container d-inline-block text-center mt-4"> 
-        <a href="/decide/{{ data.id }} approved"><button type="button" class="btn btn-success">Approve Request</button></a>
-        <form {% if reason %} method="POST" action="/decide/{{ data.id }} rejected" {% endif %} class="d-inline-block ml-4 mt-2 mb-2">
+        <a href="/decide_acc/{{ data.id }} accepted"><button type="button" class="btn btn-success">Accept Request</button></a>
+        <form {% if reason %} method="POST" action="/decide_acc/{{ data.id }} rejectedd" {% endif %} class="d-inline-block ml-4 mt-2 mb-2">
         {% csrf_token %}
         {% if reason %}
         <div class="form-group has-danger">
@@ -175,7 +157,7 @@
         {% endif %}
         
         {% if not reason %} 
-            <a href="/decide/{{ data.id }} request">
+            <a href="/decide_acc/{{ data.id }} request_acc">
         {% endif %}
             <button {% if reason %} type="submit" {% else %} type="button" {% endif %} class="btn btn-danger">Reject Request</button>
         {% if not reason %} </a>{% endif %} 
