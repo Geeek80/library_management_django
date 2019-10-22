@@ -7,8 +7,8 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-
+from django.http import HttpResponse
+import os
 
 # Create your views here.
 
@@ -977,12 +977,15 @@ def pagi(request, data, context_name, context):
         }
     )
 
-def generate_report(request):
+def generate_report(request, action):
     if not is_logged_in(request, "librarian"):
         return redirect("/login/librarian")
     if request.method == 'POST':
-        moye = request.POST.get('moye')
-        
+        if ";" in action:
+            moye = action.replace(";", "/")
+        else:
+            moye = request.POST.get('moye')
+        print(";" in action)
         if not re.match(r'\d{1,2}/\d{4}', moye):
             messages.error(request, 'invalid input : '+moye)
             return redirect('/report')
@@ -1004,7 +1007,7 @@ def generate_report(request):
         
         data = request_transaction.objects.filter(action_date__month= month, action_date__year = year, status="approved")
         total, temp = 0, 0
-        names, years, rollno, divisions = [],[],[],[]
+        names, years, rollno, divisions, csv = [],[],[],[], "Application No.,Receipt No.,Enrollment,Name,Division,Roll No.,Batch Year,Date Requested,Date Approved,Amount\n"
         if data.exists():
             for i in data:
                 total += i.amount
@@ -1014,9 +1017,32 @@ def generate_report(request):
                 rollno.insert(temp, stud.rollno)
                 divisions.insert(temp, stud.division)
                 temp+=1
+
+                csv += (i.application_no+"," if i.application_no else "not available,")
+                csv += (str(i.receipt_no)+"," if i.receipt_no else "not available,")
+                csv += (str(i.student_enrollment)+",")
+                csv += (str(stud.name)+",")
+                csv += (str(stud.division)+",")
+                csv += (str(stud.rollno)+",")
+                csv += ("{},".format(stud.batch_year))
+                csv += ("{},".format((i.date.date())))
+                csv += ("{},".format(i.action_date.date()))
+                csv += (str(i.amount)+"\n")
+            if ";" in action:
+                nam = "{}-{} Report.csv".format(month, year)
+                with open(nam, "w+") as f:
+                    f.write(csv)
+                with open(nam, "r") as f:
+                    response = HttpResponse(f.read(), content_type="application/vnd.csv")
+                    response['Content-Disposition'] = 'filename={}'.format(nam)
+                    nn = os.path.join(settings.BASE_DIR, nam)
+                    print(nn)
+                os.remove(os.path.join(settings.BASE_DIR, nam))
+                return response
         else:
             messages.info(request, 'we don\'t have data of '+moye)
             return redirect('/report')
+        mon = str(month)+";"+str(year)
         month = calendar.month_name[month]
         context = {
             'data':data,
@@ -1027,6 +1053,7 @@ def generate_report(request):
             'years':years,
             'rollno':rollno,
             'divisions':divisions,
+            'mon':mon
         }
         return render(request, 'librarian/report.html', context)
     

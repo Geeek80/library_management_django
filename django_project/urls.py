@@ -41,7 +41,7 @@ urlpatterns = [
     path('image_view/<str:id>', image_view),
     path('decide/<str:id>', decide),
     path('deduct/<str:id>', deduct),
-    path('report', generate_report),
+    path('report/<str:action>', generate_report),
 
     # accountant
     path('acc_home', acc_homepage),

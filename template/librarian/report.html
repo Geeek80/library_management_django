@@ -7,7 +7,7 @@
 {% if not data %}
 <div class="jumbotron vertical-center">
 <div class="col-md-5 container">
-        <form method="POST" action="/report">
+        <form method="POST" action="/report/m">
             {% csrf_token %}
         <fieldset>
           <div class="cointainer w-100">
@@ -42,6 +42,7 @@
                     <td><b>{{ data.count }}</b></td>
                     <th scope="row">Total Amount</th>
                     <td><b>{{ sum }}</b></td>
+                    <td> <form method="POST" action="/report/{{mon}}"> {% csrf_token %}<button type="submit" class="btn btn-info">Download Report</button> </form></td>
                   </tr>
                   <tr>
                     <th>Application No.</th>
