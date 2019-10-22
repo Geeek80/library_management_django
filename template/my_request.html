@@ -18,8 +18,12 @@
                         <tr>
                             <th scope="row">Request Status</th>
                             <td>
-                                {{transaction_data.status}}
-                                {% if transaction_data.status == "rejected" %}
+                              {% if transaction_data.status == "rejected" %}
+                                Rejected by Librarian
+                              {% elif transaction_data.status == "rejectedd" %}
+                                Rejected by Accountant
+                              {% endif %}
+                                {% if transaction_data.status == "rejected"  or transaction_data.status == "rejectedd"%}
                                     <a href="/request" ><button type="button" class="btn btn-outline-primary ml-5">Submit Request Again</button></a>
                                 {% endif %}
                             </td>
